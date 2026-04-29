@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { capitalize, computed } from 'vue';
 import AppSidebar from '@/components/AppSidebar.vue';
+import ModeToggle from '@/components/ModeToggle.vue';
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -50,6 +51,7 @@ const breadcrumbSegments = computed(() => {
 						</BreadcrumbItem>
 					</BreadcrumbList>
 				</Breadcrumb>
+				<ModeToggle class="ml-auto" />
 			</header>
 			<div class="flex flex-1 flex-col gap-6 p-6">
 				<slot />

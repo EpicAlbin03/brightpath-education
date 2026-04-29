@@ -29,7 +29,7 @@ function isActive(url: string) {
 				<SidebarMenuButton
 					as-child
 					:is-active="isActive(item.url)"
-					class="hover:bg-primary-50 hover:text-primary data-[active=true]:bg-primary-50 data-[active=true]:text-primary"
+					class="hover:bg-primary/5 hover:text-primary data-[active=true]:bg-primary/5 data-[active=true]:text-primary"
 				>
 					<a :href="item.url">
 						<component :is="item.icon" class="size-4" />
