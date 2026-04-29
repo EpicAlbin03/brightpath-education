@@ -16,6 +16,7 @@ import {
 	ChevronRight,
 	ChevronsLeft,
 	ChevronsRight,
+	Eye,
 	MoreHorizontal,
 	Pencil,
 	Trash2
@@ -28,6 +29,7 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
+	DropdownMenuSeparator,
 	DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import {
@@ -47,6 +49,8 @@ import {
 } from '@/components/ui/table';
 import { valueUpdater } from '@/components/ui/table/utils';
 import { students } from '@/lib/temp-data';
+
+const router = useRouter();
 
 const pageSizes = [5, 10, 25, 50];
 
@@ -89,6 +93,10 @@ const RowActions = defineComponent({
 			type: String,
 			required: true
 		},
+		onView: {
+			type: Function as PropType<() => void>,
+			required: true
+		},
 		onEdit: {
 			type: Function as PropType<() => void>,
 			required: true
@@ -108,10 +116,15 @@ const RowActions = defineComponent({
 					])
 				),
 				h(DropdownMenuContent, { align: 'end', class: 'w-40' }, () => [
+					h(DropdownMenuItem, { onSelect: props.onView }, () => [
+						h(Eye, { class: 'h-4 w-4' }),
+						'View'
+					]),
 					h(DropdownMenuItem, { onSelect: props.onEdit }, () => [
 						h(Pencil, { class: 'h-4 w-4' }),
 						'Edit'
 					]),
+					h(DropdownMenuSeparator),
 					h(DropdownMenuItem, { variant: 'destructive', onSelect: props.onDelete }, () => [
 						h(Trash2, { class: 'h-4 w-4' }),
 						'Delete'
@@ -208,6 +221,7 @@ const columns: ColumnDef<Student>[] = [
 			h('div', { class: 'flex justify-end' }, [
 				h(RowActions, {
 					itemLabel: row.original.name,
+					onView: () => router.push(`/students/${row.original.id}`),
 					onEdit: () => console.info('Edit student', row.original),
 					onDelete: () => console.info('Delete student', row.original)
 				})

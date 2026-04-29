@@ -15,6 +15,7 @@ import {
 	ChevronRight,
 	ChevronsLeft,
 	ChevronsRight,
+	Eye,
 	MoreHorizontal,
 	Pencil,
 	Trash2
@@ -26,6 +27,7 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
+	DropdownMenuSeparator,
 	DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import {
@@ -46,6 +48,8 @@ import {
 import { valueUpdater } from '@/components/ui/table/utils';
 import { courses, students } from '@/lib/temp-data';
 
+const router = useRouter();
+
 type CourseRow = Course & {
 	studentCount: number;
 };
@@ -57,6 +61,10 @@ const RowActions = defineComponent({
 	props: {
 		itemLabel: {
 			type: String,
+			required: true
+		},
+		onView: {
+			type: Function as PropType<() => void>,
 			required: true
 		},
 		onEdit: {
@@ -78,10 +86,15 @@ const RowActions = defineComponent({
 					])
 				),
 				h(DropdownMenuContent, { align: 'end', class: 'w-40' }, () => [
+					h(DropdownMenuItem, { onSelect: props.onView }, () => [
+						h(Eye, { class: 'h-4 w-4' }),
+						'View'
+					]),
 					h(DropdownMenuItem, { onSelect: props.onEdit }, () => [
 						h(Pencil, { class: 'h-4 w-4' }),
 						'Edit'
 					]),
+					h(DropdownMenuSeparator),
 					h(DropdownMenuItem, { variant: 'destructive', onSelect: props.onDelete }, () => [
 						h(Trash2, { class: 'h-4 w-4' }),
 						'Delete'
@@ -161,6 +174,7 @@ const columns: ColumnDef<CourseRow>[] = [
 			h('div', { class: 'flex justify-end' }, [
 				h(RowActions, {
 					itemLabel: row.original.name,
+					onView: () => router.push(`/courses/${row.original.id}`),
 					onEdit: () => console.info('Edit course', row.original),
 					onDelete: () => console.info('Delete course', row.original)
 				})

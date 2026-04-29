@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { capitalize, computed } from 'vue';
 import AppSidebar from '@/components/AppSidebar.vue';
 import {
 	Breadcrumb,
@@ -38,9 +38,9 @@ const breadcrumbSegments = computed(() => {
 							<template v-for="(segment, index) in breadcrumbSegments" :key="segment.href">
 								<BreadcrumbItem>
 									<BreadcrumbLink v-if="index < breadcrumbSegments.length - 1" as-child>
-										<NuxtLink :to="segment.href">{{ segment.label }}</NuxtLink>
+										<NuxtLink :to="segment.href">{{ capitalize(segment.label) }}</NuxtLink>
 									</BreadcrumbLink>
-									<BreadcrumbPage v-else>{{ segment.label }}</BreadcrumbPage>
+									<BreadcrumbPage v-else>{{ capitalize(segment.label) }}</BreadcrumbPage>
 								</BreadcrumbItem>
 								<BreadcrumbSeparator v-if="index < breadcrumbSegments.length - 1" />
 							</template>
