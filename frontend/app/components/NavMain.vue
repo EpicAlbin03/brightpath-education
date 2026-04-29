@@ -28,8 +28,8 @@ function isActive(url: string) {
 			<SidebarMenuItem v-for="item in items" :key="item.title">
 				<SidebarMenuButton
 					as-child
-					:data-active="isActive(item.url)"
-					class="data-[state=active]:bg-sidebar-accent data-[state=active]:text-sidebar-accent-foreground"
+					:is-active="isActive(item.url)"
+					class="hover:bg-primary-50 hover:text-primary data-[active=true]:bg-primary-50 data-[active=true]:text-primary"
 				>
 					<a :href="item.url">
 						<component :is="item.icon" class="size-4" />
