@@ -11,6 +11,7 @@ import {
 	useVueTable
 } from '@tanstack/vue-table';
 import {
+	ArrowUpDown,
 	ChevronLeft,
 	ChevronRight,
 	ChevronsLeft,
@@ -20,9 +21,10 @@ import {
 	Pencil,
 	Trash2
 } from 'lucide-vue-next';
-import { computed, defineComponent, h, ref } from 'vue';
+import { computed, defineComponent, h, ref, watch } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -49,12 +51,29 @@ import { valueUpdater } from '@/components/ui/table/utils';
 import { courses, students } from '@/lib/temp-data';
 
 const router = useRouter();
+const searchQuery = ref('');
 
 type CourseRow = Course & {
 	studentCount: number;
 };
 
 const pageSizes = [5, 10, 25, 50];
+
+function sortableHeader(
+	title: string,
+	column: { getIsSorted: () => false | 'asc' | 'desc'; toggleSorting: (desc?: boolean) => void }
+) {
+	return h(
+		Button,
+		{
+			variant: 'ghost',
+			size: 'sm',
+			class: '-ml-3 h-8',
+			onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
+		},
+		() => [title, h(ArrowUpDown, { class: 'h-4 w-4' })]
+	);
+}
 
 const RowActions = defineComponent({
 	name: 'CourseRowActions',
@@ -107,7 +126,7 @@ const RowActions = defineComponent({
 const sorting = ref<SortingState>([]);
 const rowSelection = ref<RowSelectionState>({});
 
-const data = computed<CourseRow[]>(() => {
+const rawData = computed<CourseRow[]>(() => {
 	const studentCounts = students.reduce<Record<number, number>>((counts, student) => {
 		for (const courseId of student.course_ids) {
 			counts[courseId] = (counts[courseId] ?? 0) + 1;
@@ -119,6 +138,18 @@ const data = computed<CourseRow[]>(() => {
 		...course,
 		studentCount: studentCounts[course.id] ?? 0
 	}));
+});
+
+const data = computed<CourseRow[]>(() => {
+	const query = searchQuery.value.trim().toLowerCase();
+
+	return rawData.value.filter((course) => {
+		return (
+			query.length === 0 ||
+			course.name.toLowerCase().includes(query) ||
+			course.code.toLowerCase().includes(query)
+		);
+	});
 });
 
 const columns: ColumnDef<CourseRow>[] = [
@@ -142,12 +173,12 @@ const columns: ColumnDef<CourseRow>[] = [
 	},
 	{
 		accessorKey: 'name',
-		header: 'Course',
+		header: ({ column }) => sortableHeader('Course', column),
 		cell: ({ row }) => h('div', { class: 'font-medium' }, row.original.name)
 	},
 	{
 		accessorKey: 'code',
-		header: 'Code'
+		header: ({ column }) => sortableHeader('Code', column)
 	},
 	{
 		accessorKey: 'description',
@@ -164,7 +195,7 @@ const columns: ColumnDef<CourseRow>[] = [
 	},
 	{
 		accessorKey: 'studentCount',
-		header: 'Students',
+		header: ({ column }) => sortableHeader('Students', column),
 		cell: ({ row }) => h('div', { class: 'font-medium' }, row.original.studentCount)
 	},
 	{
@@ -218,10 +249,20 @@ function handlePageSizeUpdate(value: unknown) {
 
 	table.setPageSize(Number(value));
 }
+
+watch(searchQuery, () => {
+	table.setPageIndex(0);
+});
 </script>
 
 <template>
 	<div class="space-y-4">
+		<Input
+			v-model="searchQuery"
+			class="w-full sm:max-w-xs"
+			placeholder="Search by course or code..."
+		/>
+
 		<div class="rounded-xl border bg-background">
 			<Table>
 				<TableHeader>

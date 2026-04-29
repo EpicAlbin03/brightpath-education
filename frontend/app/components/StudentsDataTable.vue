@@ -21,10 +21,11 @@ import {
 	Pencil,
 	Trash2
 } from 'lucide-vue-next';
-import { computed, defineComponent, h, ref } from 'vue';
+import { computed, defineComponent, h, ref, watch } from 'vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -53,6 +54,9 @@ import { students } from '@/lib/temp-data';
 const router = useRouter();
 
 const pageSizes = [5, 10, 25, 50];
+const searchQuery = ref('');
+const statusFilter = ref<'all' | 'active' | 'inactive'>('all');
+const gradeFilter = ref('all');
 
 const gradeRanks: Record<string, number> = {
 	'A+': 12,
@@ -84,6 +88,28 @@ function formatDate(date: string | null) {
 		day: 'numeric',
 		year: 'numeric'
 	}).format(new Date(date));
+}
+
+function getStatusBadgeClass(isActive: boolean) {
+	return isActive
+		? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+		: 'border-red-200 bg-red-50 text-red-700';
+}
+
+function sortableHeader(
+	title: string,
+	column: { getIsSorted: () => false | 'asc' | 'desc'; toggleSorting: (desc?: boolean) => void }
+) {
+	return h(
+		Button,
+		{
+			variant: 'ghost',
+			size: 'sm',
+			class: '-ml-3 h-8',
+			onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
+		},
+		() => [title, h(ArrowUpDown, { class: 'h-4 w-4' })]
+	);
 }
 
 const RowActions = defineComponent({
@@ -143,6 +169,12 @@ const gradeSortingFn: SortingFn<Student> = (rowA, rowB, columnId) => {
 	);
 };
 
+const gradeOptions = computed(() =>
+	Array.from(new Set(students.map((student) => student.grade))).sort(
+		(a, b) => getGradeRank(b) - getGradeRank(a)
+	)
+);
+
 const columns: ColumnDef<Student>[] = [
 	{
 		id: 'select',
@@ -164,12 +196,12 @@ const columns: ColumnDef<Student>[] = [
 	},
 	{
 		accessorKey: 'name',
-		header: 'Student',
+		header: ({ column }) => sortableHeader('Student', column),
 		cell: ({ row }) => h('div', { class: 'font-medium' }, row.original.name)
 	},
 	{
 		accessorKey: 'email',
-		header: 'Email',
+		header: ({ column }) => sortableHeader('Email', column),
 		cell: ({ row }) => h('div', { class: 'text-muted-foreground' }, row.original.email)
 	},
 	{
@@ -180,22 +212,12 @@ const columns: ColumnDef<Student>[] = [
 	{
 		accessorKey: 'grade',
 		sortingFn: gradeSortingFn,
-		header: ({ column }) =>
-			h(
-				Button,
-				{
-					variant: 'ghost',
-					size: 'sm',
-					class: '-ml-3 h-8',
-					onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-				},
-				() => ['Grade', h(ArrowUpDown, { class: 'h-4 w-4' })]
-			),
+		header: ({ column }) => sortableHeader('Grade', column),
 		cell: ({ row }) => h('div', { class: 'font-medium' }, row.original.grade)
 	},
 	{
 		id: 'courseCount',
-		header: 'Courses',
+		header: ({ column }) => sortableHeader('Courses', column),
 		accessorFn: (row) => row.course_ids.length,
 		cell: ({ row }) => h('div', { class: 'font-medium' }, row.original.course_ids.length)
 	},
@@ -207,9 +229,7 @@ const columns: ColumnDef<Student>[] = [
 				Badge,
 				{
 					variant: 'outline',
-					class: row.original.is_active
-						? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-						: 'border-red-200 bg-red-50 text-red-700'
+					class: getStatusBadgeClass(row.original.is_active)
 				},
 				() => (row.original.is_active ? 'Active' : 'Inactive')
 			)
@@ -230,7 +250,25 @@ const columns: ColumnDef<Student>[] = [
 	}
 ];
 
-const data = computed(() => students);
+const data = computed(() => {
+	const query = searchQuery.value.trim().toLowerCase();
+
+	return students.filter((student) => {
+		const matchesQuery =
+			query.length === 0 ||
+			student.name.toLowerCase().includes(query) ||
+			student.email.toLowerCase().includes(query);
+
+		const matchesStatus =
+			statusFilter.value === 'all' ||
+			(statusFilter.value === 'active' && student.is_active) ||
+			(statusFilter.value === 'inactive' && !student.is_active);
+
+		const matchesGrade = gradeFilter.value === 'all' || student.grade === gradeFilter.value;
+
+		return matchesQuery && matchesStatus && matchesGrade;
+	});
+});
 
 const table = useVueTable({
 	get data() {
@@ -267,10 +305,75 @@ function handlePageSizeUpdate(value: unknown) {
 
 	table.setPageSize(Number(value));
 }
+
+function handleStatusFilterUpdate(value: unknown) {
+	statusFilter.value = typeof value === 'string' ? (value as 'all' | 'active' | 'inactive') : 'all';
+}
+
+function handleGradeFilterUpdate(value: unknown) {
+	gradeFilter.value = typeof value === 'string' ? value : 'all';
+}
+
+watch([searchQuery, statusFilter, gradeFilter], () => {
+	table.setPageIndex(0);
+});
 </script>
 
 <template>
 	<div class="space-y-4">
+		<div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+			<Input
+				v-model="searchQuery"
+				class="w-full sm:max-w-xs"
+				placeholder="Search by student or email..."
+			/>
+
+			<div class="flex gap-3">
+				<Select :model-value="statusFilter" @update:model-value="handleStatusFilterUpdate">
+					<SelectTrigger class="w-36">
+						<SelectValue placeholder="Status">
+							<Badge
+								v-if="statusFilter === 'active'"
+								variant="outline"
+								:class="getStatusBadgeClass(true)"
+							>
+								Active
+							</Badge>
+							<Badge
+								v-else-if="statusFilter === 'inactive'"
+								variant="outline"
+								:class="getStatusBadgeClass(false)"
+							>
+								Inactive
+							</Badge>
+							<span v-else>All statuses</span>
+						</SelectValue>
+					</SelectTrigger>
+					<SelectContent align="start">
+						<SelectItem value="all">All statuses</SelectItem>
+						<SelectItem value="active">
+							<Badge variant="outline" :class="getStatusBadgeClass(true)">Active</Badge>
+						</SelectItem>
+						<SelectItem value="inactive">
+							<Badge variant="outline" :class="getStatusBadgeClass(false)">Inactive</Badge>
+						</SelectItem>
+					</SelectContent>
+				</Select>
+
+				<Select :model-value="gradeFilter" @update:model-value="handleGradeFilterUpdate">
+					<SelectTrigger class="w-36">
+						<SelectValue placeholder="Grade" />
+					</SelectTrigger>
+					<SelectContent align="start">
+						<SelectItem value="all">All grades</SelectItem>
+						<SelectItem v-for="grade in gradeOptions" :key="grade" :value="grade">
+							{{ grade }}
+						</SelectItem>
+					</SelectContent>
+				</Select>
+			</div>
+		</div>
+
 		<div class="rounded-xl border bg-background">
 			<Table>
 				<TableHeader>
