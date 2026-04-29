@@ -1,9 +1,10 @@
-<script setup lang="ts">
-import { Button } from '@/components/ui/button';
-</script>
-
 <template>
-	<p>courses</p>
-	<Button class="w-fit">Primary</Button>
-	<Button variant="secondary" class="w-fit">Secondary</Button>
+	<section class="space-y-6">
+		<div class="space-y-1">
+			<h1 class="text-2xl font-semibold tracking-tight">Courses</h1>
+			<p class="text-sm text-muted-foreground">List of all courses</p>
+		</div>
+
+		<CoursesDataTable />
+	</section>
 </template>

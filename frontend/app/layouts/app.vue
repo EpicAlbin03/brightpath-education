@@ -51,7 +51,7 @@ const breadcrumbSegments = computed(() => {
 					</BreadcrumbList>
 				</Breadcrumb>
 			</header>
-			<div class="flex flex-1 flex-col gap-4 p-4">
+			<div class="flex flex-1 flex-col gap-6 p-6">
 				<slot />
 			</div>
 		</SidebarInset>
