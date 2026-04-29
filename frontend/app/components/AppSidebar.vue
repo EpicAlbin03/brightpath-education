@@ -61,9 +61,7 @@ const { open } = useSidebar();
 			<NavMain :items="items" />
 		</SidebarContent>
 		<SidebarFooter>
-			<div class="p-1">
-				<NavUser :user="user" />
-			</div>
+			<NavUser :user="user" />
 		</SidebarFooter>
 		<SidebarRail />
 	</Sidebar>
