@@ -18,7 +18,7 @@ export default defineNuxtConfig({
       tailwindcss(),
     ],
   },
-  modules: ['shadcn-nuxt', '@nuxt/eslint'],
+  modules: ['shadcn-nuxt', '@nuxt/eslint', '@nuxt/image'],
   shadcn: {
     /**
      * Prefix for all the imported component.

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { SidebarProps } from '@/components/ui/sidebar';
-import { Book, School, Users, type LucideIcon } from 'lucide-vue-next';
+import { Book, Users, type LucideIcon } from 'lucide-vue-next';
 import NavMain from '@/components/NavMain.vue';
 import {
 	Sidebar,
@@ -8,9 +8,9 @@ import {
 	SidebarFooter,
 	SidebarHeader,
 	SidebarMenu,
-	SidebarMenuButton,
 	SidebarMenuItem,
-	SidebarRail
+	SidebarRail,
+	useSidebar
 } from '@/components/ui/sidebar';
 import NavUser from './NavUser.vue';
 
@@ -41,6 +41,8 @@ const user = {
 	email: 'john.doe@example.com',
 	avatar: 'https://github.com/shadcn.png'
 };
+
+const { open } = useSidebar();
 </script>
 
 <template>
@@ -48,19 +50,10 @@ const user = {
 		<SidebarHeader>
 			<SidebarMenu>
 				<SidebarMenuItem>
-					<SidebarMenuButton size="lg" as-child>
-						<a href="#">
-							<div
-								class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground"
-							>
-								<School class="size-4" />
-							</div>
-							<div class="flex flex-col gap-0.5 leading-none">
-								<span class="font-medium">Studentplatform</span>
-								<span class="">v1.0.0</span>
-							</div>
-						</a>
-					</SidebarMenuButton>
+					<a href="/" class="cursor-pointer">
+						<NuxtImg src="/logo.jpg" alt="logo" class="mx-auto h-16 rounded-lg" v-if="open" />
+						<NuxtImg src="/favicon.jpg" alt="logo" class="mx-auto mt-2 h-8 rounded-lg" v-else />
+					</a>
 				</SidebarMenuItem>
 			</SidebarMenu>
 		</SidebarHeader>
