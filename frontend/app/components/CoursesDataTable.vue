@@ -206,7 +206,7 @@ const columns: ColumnDef<CourseRow>[] = [
 				h(RowActions, {
 					itemLabel: row.original.name,
 					onView: () => router.push(`/courses/${row.original.id}`),
-					onEdit: () => console.info('Edit course', row.original),
+					onEdit: () => router.push(`/courses/${row.original.id}/edit`),
 					onDelete: () => console.info('Delete course', row.original)
 				})
 			]),
@@ -257,11 +257,15 @@ watch(searchQuery, () => {
 
 <template>
 	<div class="space-y-4">
-		<Input
-			v-model="searchQuery"
-			class="w-full sm:max-w-xs"
-			placeholder="Search by course or code..."
-		/>
+		<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+			<Input
+				v-model="searchQuery"
+				class="w-full sm:max-w-xs"
+				placeholder="Search by course or code..."
+			/>
+
+			<Button @click="router.push('/courses/create')">New Course</Button>
+		</div>
 
 		<div class="rounded-xl border bg-background">
 			<Table>

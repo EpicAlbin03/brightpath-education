@@ -242,7 +242,7 @@ const columns: ColumnDef<Student>[] = [
 				h(RowActions, {
 					itemLabel: row.original.name,
 					onView: () => router.push(`/students/${row.original.id}`),
-					onEdit: () => console.info('Edit student', row.original),
+					onEdit: () => router.push(`/students/${row.original.id}/edit`),
 					onDelete: () => console.info('Delete student', row.original)
 				})
 			]),
@@ -321,57 +321,61 @@ watch([searchQuery, statusFilter, gradeFilter], () => {
 
 <template>
 	<div class="space-y-4">
-		<div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
-			<Input
-				v-model="searchQuery"
-				class="w-full sm:max-w-xs"
-				placeholder="Search by student or email..."
-			/>
+		<div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+			<div class="flex flex-1 flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+				<Input
+					v-model="searchQuery"
+					class="w-full sm:max-w-xs"
+					placeholder="Search by student or email..."
+				/>
 
-			<div class="flex gap-3">
-				<Select :model-value="statusFilter" @update:model-value="handleStatusFilterUpdate">
-					<SelectTrigger class="w-36">
-						<SelectValue placeholder="Status">
-							<Badge
-								v-if="statusFilter === 'active'"
-								variant="outline"
-								:class="getStatusBadgeClass(true)"
-							>
-								Active
-							</Badge>
-							<Badge
-								v-else-if="statusFilter === 'inactive'"
-								variant="outline"
-								:class="getStatusBadgeClass(false)"
-							>
-								Inactive
-							</Badge>
-							<span v-else>All statuses</span>
-						</SelectValue>
-					</SelectTrigger>
-					<SelectContent align="start">
-						<SelectItem value="all">All statuses</SelectItem>
-						<SelectItem value="active">
-							<Badge variant="outline" :class="getStatusBadgeClass(true)">Active</Badge>
-						</SelectItem>
-						<SelectItem value="inactive">
-							<Badge variant="outline" :class="getStatusBadgeClass(false)">Inactive</Badge>
-						</SelectItem>
-					</SelectContent>
-				</Select>
+				<div class="flex flex-col gap-3 sm:flex-row sm:gap-3">
+					<Select :model-value="statusFilter" @update:model-value="handleStatusFilterUpdate">
+						<SelectTrigger class="w-full sm:w-36">
+							<SelectValue placeholder="Status">
+								<Badge
+									v-if="statusFilter === 'active'"
+									variant="outline"
+									:class="getStatusBadgeClass(true)"
+								>
+									Active
+								</Badge>
+								<Badge
+									v-else-if="statusFilter === 'inactive'"
+									variant="outline"
+									:class="getStatusBadgeClass(false)"
+								>
+									Inactive
+								</Badge>
+								<span v-else>All statuses</span>
+							</SelectValue>
+						</SelectTrigger>
+						<SelectContent align="start">
+							<SelectItem value="all">All statuses</SelectItem>
+							<SelectItem value="active">
+								<Badge variant="outline" :class="getStatusBadgeClass(true)">Active</Badge>
+							</SelectItem>
+							<SelectItem value="inactive">
+								<Badge variant="outline" :class="getStatusBadgeClass(false)">Inactive</Badge>
+							</SelectItem>
+						</SelectContent>
+					</Select>
 
-				<Select :model-value="gradeFilter" @update:model-value="handleGradeFilterUpdate">
-					<SelectTrigger class="w-36">
-						<SelectValue placeholder="Grade" />
-					</SelectTrigger>
-					<SelectContent align="start">
-						<SelectItem value="all">All grades</SelectItem>
-						<SelectItem v-for="grade in gradeOptions" :key="grade" :value="grade">
-							{{ grade }}
-						</SelectItem>
-					</SelectContent>
-				</Select>
+					<Select :model-value="gradeFilter" @update:model-value="handleGradeFilterUpdate">
+						<SelectTrigger class="w-full sm:w-36">
+							<SelectValue placeholder="Grade" />
+						</SelectTrigger>
+						<SelectContent align="start">
+							<SelectItem value="all">All grades</SelectItem>
+							<SelectItem v-for="grade in gradeOptions" :key="grade" :value="grade">
+								{{ grade }}
+							</SelectItem>
+						</SelectContent>
+					</Select>
+				</div>
 			</div>
+
+			<Button class="sm:self-start" @click="router.push('/students/create')">New Student</Button>
 		</div>
 
 		<div class="rounded-xl border bg-background">
