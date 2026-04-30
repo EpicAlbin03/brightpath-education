@@ -1,10 +1,11 @@
 <script setup lang="ts">
-const route = useRoute();
+import CreateCourseForm from '~/components/CreateCourseForm.vue';
+import PageTitle from '~/components/PageTitle.vue';
 </script>
 
 <template>
-	<section class="space-y-4">
-		<h1 class="text-2xl font-semibold tracking-tight">Create Course</h1>
-		<p>{{ route.params.id }}</p>
+	<section class="space-y-6">
+		<PageTitle title="Create Course" />
+		<CreateCourseForm @created="(course) => console.log('Course created:', course)" />
 	</section>
 </template>

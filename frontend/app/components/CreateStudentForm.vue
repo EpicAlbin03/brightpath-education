@@ -1,0 +1,207 @@
+<script setup lang="ts">
+import { DateFormatter, getLocalTimeZone, parseDate, today } from '@internationalized/date';
+import { toTypedSchema } from '@vee-validate/zod';
+import { CalendarIcon } from 'lucide-vue-next';
+import type { DateValue } from 'reka-ui';
+import { ref } from 'vue';
+import { Field as VeeField, useForm } from 'vee-validate';
+import {
+	studentFormSchema,
+	studentGradeOptions,
+	type StudentFormSchema
+} from '~~/shared/schemas/forms';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue
+} from '@/components/ui/select';
+import { cn } from '@/lib/utils';
+
+const emit = defineEmits<{
+	created: [payload: StudentFormSchema];
+}>();
+
+const submitError = ref<string | null>(null);
+const submitSuccess = ref<string | null>(null);
+const isDatePickerOpen = ref(false);
+const localTimeZone = getLocalTimeZone();
+const dateFormatter = new DateFormatter('en-US', { dateStyle: 'long' });
+const defaultDatePlaceholder = today(localTimeZone);
+
+const initialValues: StudentFormSchema = {
+	name: '',
+	email: '',
+	date_of_birth: '',
+	grade: 'NA'
+};
+
+const parseStudentDate = (value: string) => {
+	if (!value) {
+		return undefined;
+	}
+
+	try {
+		return parseDate(value);
+	} catch {
+		return undefined;
+	}
+};
+
+const formatStudentDate = (value: string) => {
+	const parsedValue = parseStudentDate(value);
+
+	return parsedValue ? dateFormatter.format(parsedValue.toDate(localTimeZone)) : 'Pick a date';
+};
+
+const updateStudentDate = (value: DateValue | undefined, onChange: (value: string) => void) => {
+	onChange(value ? value.toString() : '');
+
+	if (value) {
+		isDatePickerOpen.value = false;
+	}
+};
+
+const { handleSubmit, isSubmitting, resetForm } = useForm({
+	validationSchema: toTypedSchema(studentFormSchema),
+	initialValues
+});
+
+const onSubmit = handleSubmit(async (values) => {
+	submitError.value = null;
+	submitSuccess.value = null;
+
+	try {
+		await $fetch('/api/students/create', {
+			method: 'POST',
+			body: values
+		});
+
+		emit('created', values);
+		resetForm({ values: initialValues });
+		submitSuccess.value = 'Student created successfully.';
+	} catch (error) {
+		submitError.value =
+			error instanceof Error ? error.message : 'Unable to create student right now.';
+	}
+});
+</script>
+
+<template>
+	<form class="max-w-lg space-y-6" novalidate @submit="onSubmit">
+		<FieldSet class="gap-5">
+			<VeeField v-slot="{ field, errors }" name="name" :validate-on-input="true">
+				<Field :data-invalid="!!errors.length">
+					<FieldLabel for="student-name">Student name</FieldLabel>
+					<Input
+						id="student-name"
+						v-bind="field"
+						placeholder="Ava Thompson"
+						autocomplete="name"
+						:aria-invalid="!!errors.length"
+					/>
+					<FieldError v-if="errors.length" :errors="errors" />
+				</Field>
+			</VeeField>
+
+			<VeeField v-slot="{ field, errors }" name="email" :validate-on-input="true">
+				<Field :data-invalid="!!errors.length">
+					<FieldLabel for="student-email">Email</FieldLabel>
+					<Input
+						id="student-email"
+						v-bind="field"
+						type="email"
+						placeholder="ava.thompson@example.com"
+						autocomplete="email"
+						:aria-invalid="!!errors.length"
+					/>
+					<FieldError v-if="errors.length" :errors="errors" />
+				</Field>
+			</VeeField>
+
+			<VeeField v-slot="{ field, errors }" name="date_of_birth">
+				<Field :data-invalid="!!errors.length">
+					<FieldLabel for="student-date-of-birth">Date of birth</FieldLabel>
+					<Popover :open="isDatePickerOpen" @update:open="(value) => (isDatePickerOpen = value)">
+						<PopoverTrigger as-child>
+							<Button
+								id="student-date-of-birth"
+								type="button"
+								variant="outline"
+								:class="
+									cn(
+										'w-full justify-start text-left font-normal',
+										!field.value && 'text-muted-foreground'
+									)
+								"
+								:aria-invalid="!!errors.length"
+								@blur="field.onBlur"
+							>
+								<CalendarIcon class="mr-2 size-4" />
+								{{ formatStudentDate(field.value) }}
+							</Button>
+						</PopoverTrigger>
+						<PopoverContent class="w-auto p-0" align="start">
+							<Calendar
+								:model-value="parseStudentDate(field.value)"
+								:default-placeholder="defaultDatePlaceholder"
+								:initial-focus="true"
+								layout="month-and-year"
+								@update:model-value="(value) => updateStudentDate(value, field.onChange)"
+							/>
+						</PopoverContent>
+					</Popover>
+					<FieldError v-if="errors.length" :errors="errors" />
+				</Field>
+			</VeeField>
+
+			<VeeField v-slot="{ field, errors }" name="grade">
+				<Field :data-invalid="!!errors.length">
+					<FieldLabel for="student-grade">Grade</FieldLabel>
+					<Select
+						:model-value="field.value"
+						@update:model-value="field.onChange"
+						@blur="field.onBlur"
+					>
+						<SelectTrigger id="student-grade" class="w-full" :aria-invalid="!!errors.length">
+							<SelectValue placeholder="Select a grade" />
+						</SelectTrigger>
+						<SelectContent position="item-aligned">
+							<SelectItem v-for="grade in studentGradeOptions" :key="grade" :value="grade">
+								{{ grade }}
+							</SelectItem>
+						</SelectContent>
+					</Select>
+					<FieldError v-if="errors.length" :errors="errors" />
+				</Field>
+			</VeeField>
+		</FieldSet>
+
+		<p v-if="submitError" class="text-sm text-destructive">
+			{{ submitError }}
+		</p>
+		<p v-else-if="submitSuccess" class="text-sm text-emerald-600">
+			{{ submitSuccess }}
+		</p>
+
+		<div class="flex items-center gap-3">
+			<Button type="submit" :disabled="isSubmitting">
+				{{ isSubmitting ? 'Creating student...' : 'Create student' }}
+			</Button>
+			<Button
+				type="button"
+				variant="outline"
+				:disabled="isSubmitting"
+				@click="resetForm({ values: initialValues })"
+			>
+				Reset
+			</Button>
+		</div>
+	</form>
+</template>

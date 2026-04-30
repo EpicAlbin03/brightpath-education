@@ -1,10 +1,11 @@
 <script setup lang="ts">
-const route = useRoute();
+import CreateStudentForm from '~/components/CreateStudentForm.vue';
+import PageTitle from '~/components/PageTitle.vue';
 </script>
 
 <template>
-	<section class="space-y-4">
-		<h1 class="text-2xl font-semibold tracking-tight">Create Student</h1>
-		<p>{{ route.params.id }}</p>
+	<section class="space-y-6">
+		<PageTitle title="Create Student" />
+		<CreateStudentForm @created="(student) => console.log('Student created:', student)" />
 	</section>
 </template>
