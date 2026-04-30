@@ -22,6 +22,7 @@ import {
 	Trash2
 } from 'lucide-vue-next';
 import { computed, defineComponent, h, ref, watch } from 'vue';
+import DeleteAlertDialog from '@/components/DeleteAlertDialog.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -57,6 +58,7 @@ const pageSizes = [5, 10, 25, 50];
 const searchQuery = ref('');
 const statusFilter = ref<'all' | 'active' | 'inactive'>('all');
 const gradeFilter = ref('all');
+const studentRows = ref(students.map((student) => ({ ...student })));
 
 const gradeRanks: Record<string, number> = {
 	'A+': 12,
@@ -133,6 +135,12 @@ const RowActions = defineComponent({
 		}
 	},
 	setup(props) {
+		const isDeleteDialogOpen = ref(false);
+
+		function handleDeleteSelect() {
+			isDeleteDialogOpen.value = true;
+		}
+
 		return () =>
 			h(DropdownMenu, () => [
 				h(DropdownMenuTrigger, { asChild: true }, () =>
@@ -151,11 +159,21 @@ const RowActions = defineComponent({
 						'Edit'
 					]),
 					h(DropdownMenuSeparator),
-					h(DropdownMenuItem, { variant: 'destructive', onSelect: props.onDelete }, () => [
+					h(DropdownMenuItem, { variant: 'destructive', onSelect: handleDeleteSelect }, () => [
 						h(Trash2, { class: 'h-4 w-4' }),
 						'Delete'
 					])
-				])
+				]),
+				h(DeleteAlertDialog, {
+					open: isDeleteDialogOpen.value,
+					'onUpdate:open': (value: boolean) => {
+						isDeleteDialogOpen.value = value;
+					},
+					title: `Delete ${props.itemLabel}?`,
+					description:
+						'This action cannot be undone. This will permanently remove the student record.',
+					action: props.onDelete
+				})
 			]);
 	}
 });
@@ -243,7 +261,15 @@ const columns: ColumnDef<Student>[] = [
 					itemLabel: row.original.name,
 					onView: () => router.push(`/students/${row.original.id}`),
 					onEdit: () => router.push(`/students/${row.original.id}/edit`),
-					onDelete: () => console.info('Delete student', row.original)
+					onDelete: async () => {
+						await $fetch(`/api/students/${row.original.id}/delete`, {
+							method: 'POST'
+						});
+
+						studentRows.value = studentRows.value.filter(
+							(student) => student.id !== row.original.id
+						);
+					}
 				})
 			]),
 		enableSorting: false
@@ -253,7 +279,7 @@ const columns: ColumnDef<Student>[] = [
 const data = computed(() => {
 	const query = searchQuery.value.trim().toLowerCase();
 
-	return students.filter((student) => {
+	return studentRows.value.filter((student) => {
 		const matchesQuery =
 			query.length === 0 ||
 			student.name.toLowerCase().includes(query) ||
