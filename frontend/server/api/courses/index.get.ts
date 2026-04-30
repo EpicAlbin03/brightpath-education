@@ -1,9 +1,9 @@
 export default defineEventHandler((event) => {
-	console.log('POST /api/courses/delete');
+	console.log('GET /api/courses');
 	setResponseStatus(event, 200);
 
 	return {
 		ok: true,
-		route: 'POST /api/courses/delete'
+		route: 'GET /api/courses'
 	};
 });
