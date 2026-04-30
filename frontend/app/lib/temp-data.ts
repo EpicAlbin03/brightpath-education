@@ -38,6 +38,7 @@ export const students: Student[] = [
 	{
 		id: 1,
 		name: 'Ava Thompson',
+		profile_photo: 'https://github.com/shadcn.png',
 		email: 'ava.thompson@example.com',
 		date_of_birth: '2008-03-14',
 		grade: 'A',
@@ -47,6 +48,7 @@ export const students: Student[] = [
 	{
 		id: 2,
 		name: 'Noah Bennett',
+		profile_photo: 'https://github.com/shadcn.png',
 		email: 'noah.bennett@example.com',
 		date_of_birth: '2007-11-02',
 		grade: 'B+',
@@ -56,6 +58,7 @@ export const students: Student[] = [
 	{
 		id: 3,
 		name: 'Mia Patel',
+		profile_photo: 'https://github.com/shadcn.png',
 		email: 'mia.patel@example.com',
 		date_of_birth: '2008-07-21',
 		grade: 'A-',
@@ -65,6 +68,7 @@ export const students: Student[] = [
 	{
 		id: 4,
 		name: 'Liam Carter',
+		profile_photo: 'https://github.com/shadcn.png',
 		email: 'liam.carter@example.com',
 		date_of_birth: '2006-12-09',
 		grade: 'C+',
@@ -74,6 +78,7 @@ export const students: Student[] = [
 	{
 		id: 5,
 		name: 'Sophia Nguyen',
+		profile_photo: 'https://github.com/shadcn.png',
 		email: 'sophia.nguyen@example.com',
 		date_of_birth: '2007-05-30',
 		grade: 'B',
@@ -83,6 +88,7 @@ export const students: Student[] = [
 	{
 		id: 6,
 		name: 'Ethan Walker',
+		profile_photo: 'https://github.com/shadcn.png',
 		email: 'ethan.walker@example.com',
 		date_of_birth: null,
 		grade: 'NA',
@@ -92,6 +98,7 @@ export const students: Student[] = [
 	{
 		id: 7,
 		name: 'Isabella Green',
+		profile_photo: 'https://github.com/shadcn.png',
 		email: 'isabella.green@example.com',
 		date_of_birth: '2008-01-17',
 		grade: 'A',
@@ -101,6 +108,7 @@ export const students: Student[] = [
 	{
 		id: 8,
 		name: 'James Flores',
+		profile_photo: 'https://github.com/shadcn.png',
 		email: 'james.flores@example.com',
 		date_of_birth: '2007-09-08',
 		grade: 'B-',
@@ -110,6 +118,7 @@ export const students: Student[] = [
 	{
 		id: 9,
 		name: 'Charlotte Adams',
+		profile_photo: 'https://github.com/shadcn.png',
 		email: 'charlotte.adams@example.com',
 		date_of_birth: '2006-04-26',
 		grade: 'A+',
@@ -119,6 +128,7 @@ export const students: Student[] = [
 	{
 		id: 10,
 		name: 'Benjamin Scott',
+		profile_photo: 'https://github.com/shadcn.png',
 		email: 'benjamin.scott@example.com',
 		date_of_birth: '2008-08-13',
 		grade: 'B',
