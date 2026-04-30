@@ -8,7 +8,7 @@ export type Course = {
 export type Student = {
 	id: number;
 	name: string;
-	profile_photo: string;
+	profile_photo?: string;
 	email: string;
 	date_of_birth: string | null;
 	grade: string;
