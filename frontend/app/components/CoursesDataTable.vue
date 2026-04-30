@@ -19,7 +19,8 @@ import {
 	Eye,
 	MoreHorizontal,
 	Pencil,
-	Trash2
+	Trash2,
+	Users
 } from 'lucide-vue-next';
 import { computed, defineComponent, h, ref, watch } from 'vue';
 import DeleteAlertDialog from '@/components/DeleteAlertDialog.vue';
@@ -88,6 +89,10 @@ const RowActions = defineComponent({
 			type: Function as PropType<() => void>,
 			required: true
 		},
+		onViewStudents: {
+			type: Function as PropType<() => void>,
+			required: true
+		},
 		onEdit: {
 			type: Function as PropType<() => void>,
 			required: true
@@ -116,6 +121,10 @@ const RowActions = defineComponent({
 					h(DropdownMenuItem, { onSelect: props.onView }, () => [
 						h(Eye, { class: 'h-4 w-4' }),
 						'View'
+					]),
+					h(DropdownMenuItem, { onSelect: props.onViewStudents }, () => [
+						h(Users, { class: 'h-4 w-4' }),
+						'Students'
 					]),
 					h(DropdownMenuItem, { onSelect: props.onEdit }, () => [
 						h(Pencil, { class: 'h-4 w-4' }),
@@ -224,6 +233,7 @@ const columns: ColumnDef<CourseRow>[] = [
 				h(RowActions, {
 					itemLabel: row.original.name,
 					onView: () => router.push(`/courses/${row.original.id}`),
+					onViewStudents: () => router.push(`/courses/${row.original.id}/students`),
 					onEdit: () => router.push(`/courses/${row.original.id}/edit`),
 					onDelete: async () => {
 						await $fetch(`/api/courses/${row.original.id}/delete`, {
