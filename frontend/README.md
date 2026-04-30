@@ -1,6 +1,9 @@
-# Nuxt Minimal Starter
+# Frontend
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+## Technologies
+
+- [Nuxt](https://nuxt.com/docs/getting-started/introduction)
+- [shadcn/vue](https://www.shadcn-vue.com)
 
 ## Setup
 
