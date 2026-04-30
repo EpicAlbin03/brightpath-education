@@ -5,6 +5,8 @@
 
 # /students/
 # /students/<id>/
+# /students/<id>/courses/          (NEW)
+# /students/<id>/courses/<cid>/    (NEW)
 
 # /courses/
 # /courses/<id>/
@@ -17,6 +19,9 @@ from rest_framework_simplejwt.views import (
 from .api_views import (
     StudentListCreateAPIView,
     StudentRetrieveUpdateDestroyAPIView,
+    StudentCoursesListAPIView,
+    StudentCoursesEnrollAPIView,
+    StudentCourseUnenrollAPIView,
     CourseListCreateAPIView,
     CourseRetrieveUpdateDestroyAPIView,
     CourseStudentsListAPIView
@@ -31,14 +36,19 @@ urlpatterns = [
     
     
 
-    # API endpoints for Student model
+    # API endpoints for Student model (CRUD)
     path('students/', StudentListCreateAPIView.as_view(), name='student-list-create'),
     path('students/<int:pk>/', StudentRetrieveUpdateDestroyAPIView.as_view(), name='student-retrieve-update-destroy'),
 
-    # API endpoints for Course model
+    # NEW: Student Course Enrollment endpoints
+    path('students/<int:student_id>/courses/', StudentCoursesListAPIView.as_view(), name='student-courses-list'),
+    path('students/<int:student_id>/courses/', StudentCoursesEnrollAPIView.as_view(), name='student-courses-enroll'),
+    path('students/<int:student_id>/courses/<int:course_id>/', StudentCourseUnenrollAPIView.as_view(), name='student-course-unenroll'),
+
+    # API endpoints for Course model (CRUD)
     path('courses/', CourseListCreateAPIView.as_view(), name='course-list-create'),
     path('courses/<int:pk>/', CourseRetrieveUpdateDestroyAPIView.as_view(), name='course-retrieve-update-destroy'),
 
-    # # Nested endpoint for listing students in a specific course
+    # Course Students endpoint - list students in a specific course
     path('courses/<int:pk>/students/', CourseStudentsListAPIView.as_view(), name='course-students-list'),
 ]
