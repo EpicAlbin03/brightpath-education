@@ -4,6 +4,8 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from .models import Student, Course
+
 
 def get_user_role(user):
     """Return the effective role string for a user."""
@@ -126,3 +128,18 @@ class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
             "access": str(refresh.access_token),
             "refresh": str(refresh),
         }
+    
+
+
+
+class CourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = '__all__'
+
+class StudentSerializer(serializers.ModelSerializer):
+    course_detail = CourseSerializer(source='course', read_only=True)
+
+    class Meta:
+        model = Student
+        fields = '__all__'
