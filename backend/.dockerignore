@@ -1,0 +1,16 @@
+*.log
+*.pyc
+.DS_Store
+.agents
+.env
+.env.example
+.git
+.gitignore
+.pytest_cache
+.ruff_cache
+.tmp
+.venv
+.vscode
+Python
+__pycache__
+db.sqlite3
