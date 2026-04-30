@@ -1,41 +1,24 @@
-# Nuxt Minimal Starter
+# Frontend
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+## Technologies
+
+- [Nuxt](https://nuxt.com/docs/getting-started/introduction)
+- [shadcn/vue](https://www.shadcn-vue.com)
 
 ## Setup
 
 Make sure to install dependencies:
 
 ```bash
-# npm
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
 ## Development Server
 
-Start the development server on `http://localhost:3000`:
+Start the development server on `http://localhost:5173`:
 
 ```bash
-# npm
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
 ## Production
@@ -43,33 +26,30 @@ bun run dev
 Build the application for production:
 
 ```bash
-# npm
 npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
 ```
 
 Locally preview production build:
 
 ```bash
-# npm
 npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+## TODO
+
+### Features
+
+- Detail pages for courses and students.
+- Profile picture for students.
+- Delete - Are You Sure? Dialogs.
+- Edit forms.
+- Create students and courses forms.
+- Add student to course / add course to student.
+- Auth.
+
+### Bugs
+
+- The sidebar width is messing with the responsiveness, so table is off-screen, without scrollbar, on some screen sizes.
+- Make logo transparent.
