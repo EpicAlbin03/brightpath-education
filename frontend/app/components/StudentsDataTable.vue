@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ColumnDef, RowSelectionState, SortingFn, SortingState } from '@tanstack/vue-table';
 import type { PropType } from 'vue';
-import type { Student } from '~~/shared/types/api';
+import type { Student } from '~/lib/types';
 import {
 	FlexRender,
 	getCoreRowModel,

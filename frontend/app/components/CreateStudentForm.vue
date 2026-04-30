@@ -5,11 +5,7 @@ import { CalendarIcon } from 'lucide-vue-next';
 import type { DateValue } from 'reka-ui';
 import { ref } from 'vue';
 import { Field as VeeField, useForm } from 'vee-validate';
-import {
-	studentFormSchema,
-	studentGradeOptions,
-	type StudentFormSchema
-} from '~~/shared/schemas/forms';
+import { studentFormSchema, studentGradeOptions, type StudentFormSchema } from '@/lib/schemas';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';

@@ -1,4 +1,4 @@
-import type { Course, Student } from '../../shared/types/api';
+import type { Course, Student } from './types';
 
 export const courses: Course[] = [
 	{

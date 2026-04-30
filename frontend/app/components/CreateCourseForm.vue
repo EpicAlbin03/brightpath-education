@@ -2,9 +2,9 @@
 import { toTypedSchema } from '@vee-validate/zod';
 import { ref } from 'vue';
 import { Field as VeeField, useForm } from 'vee-validate';
-import { courseFormSchema, type CourseFormSchema } from '~~/shared/schemas/forms';
+import { courseFormSchema, type CourseFormSchema } from '@/lib/schemas';
 import { Button } from '@/components/ui/button';
-import { Field, FieldDescription, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
+import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 
 const emit = defineEmits<{

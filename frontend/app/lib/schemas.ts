@@ -1,6 +1,5 @@
 import { z } from 'zod';
-
-import type { Course, Student } from '../types/api';
+import type { Course, Student } from './types';
 
 export type CourseFormPayload = Omit<Course, 'id'>;
 export type StudentFormPayload = Omit<Student, 'id' | 'is_active' | 'profile_photo' | 'course_ids'>;
