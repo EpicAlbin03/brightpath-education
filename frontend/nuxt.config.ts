@@ -33,4 +33,10 @@ export default defineNuxtConfig({
      */
     componentDir: '@/lib/components/ui'
   },
+  runtimeConfig: {
+    public: {
+      apiBase: process.env.NUXT_PUBLIC_API_BASE ?? 'http://localhost:8000/api',
+      googleClientId: process.env.NUXT_PUBLIC_GOOGLE_CLIENT_ID ?? '',
+    },
+  },
 })
