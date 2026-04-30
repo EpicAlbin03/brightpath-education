@@ -24,6 +24,7 @@ const emit = defineEmits<{
 	created: [payload: StudentFormSchema];
 }>();
 
+const config = useRuntimeConfig();
 const submitError = ref<string | null>(null);
 const submitSuccess = ref<string | null>(null);
 const isDatePickerOpen = ref(false);
@@ -72,11 +73,16 @@ const { handleSubmit, isSubmitting, resetForm } = useForm({
 const onSubmit = handleSubmit(async (values) => {
 	submitError.value = null;
 	submitSuccess.value = null;
+	const accessToken = localStorage.getItem('access_token');
+	console.log(values);
 
 	try {
-		await $fetch('/api/students/create', {
+		await $fetch(`${config.public.apiBase}/students/`, {
 			method: 'POST',
-			body: values
+			body: values,
+			headers: {
+				Authorization: `Bearer ${accessToken}`
+			}
 		});
 
 		emit('created', values);

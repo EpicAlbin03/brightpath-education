@@ -11,6 +11,7 @@ const emit = defineEmits<{
 	created: [payload: CourseFormSchema];
 }>();
 
+const config = useRuntimeConfig();
 const submitError = ref<string | null>(null);
 const submitSuccess = ref<string | null>(null);
 
@@ -32,11 +33,16 @@ const { handleSubmit, isSubmitting, resetForm } = useForm({
 const onSubmit = handleSubmit(async (values) => {
 	submitError.value = null;
 	submitSuccess.value = null;
+	const accessToken = localStorage.getItem('access_token');
 
 	try {
-		await $fetch('/api/courses/create', {
+		await $fetch(`${config.public.apiBase}/courses/`, {
 			method: 'POST',
-			body: values
+			body: values,
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+				'Content-Type': 'application/json'
+			}
 		});
 
 		emit('created', values);
