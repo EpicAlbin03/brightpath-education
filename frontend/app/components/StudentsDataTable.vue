@@ -302,6 +302,7 @@ const data = computed(() => {
 	return studentRows.value.filter((student) => {
 		const matchesQuery =
 			query.length === 0 ||
+			String(student.id).includes(query) ||
 			student.name.toLowerCase().includes(query) ||
 			student.email.toLowerCase().includes(query);
 
@@ -372,7 +373,7 @@ watch([searchQuery, statusFilter, gradeFilter], () => {
 				<Input
 					v-model="searchQuery"
 					class="w-full sm:max-w-xs"
-					placeholder="Search by student or email..."
+					placeholder="Search by ID, student, or email..."
 				/>
 
 				<div class="flex flex-col gap-3 sm:flex-row sm:gap-3">

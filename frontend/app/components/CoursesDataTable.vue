@@ -173,6 +173,7 @@ const data = computed<CourseRow[]>(() => {
 	return rawData.value.filter((course) => {
 		return (
 			query.length === 0 ||
+			String(course.id).includes(query) ||
 			course.name.toLowerCase().includes(query) ||
 			course.code.toLowerCase().includes(query)
 		);
@@ -304,7 +305,7 @@ watch(searchQuery, () => {
 			<Input
 				v-model="searchQuery"
 				class="w-full sm:max-w-xs"
-				placeholder="Search by course or code..."
+				placeholder="Search by ID, course, or code..."
 			/>
 
 			<Button @click="router.push('/courses/create')">New Course</Button>
