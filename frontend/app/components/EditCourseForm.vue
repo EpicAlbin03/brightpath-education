@@ -8,6 +8,7 @@ import type { Course } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 const props = defineProps<{
 	course: Course;
@@ -88,13 +89,12 @@ const onSubmit = handleSubmit(async (values) => {
 			<VeeField v-slot="{ field, errors }" name="description" :validate-on-input="true">
 				<Field :data-invalid="!!errors.length">
 					<FieldLabel for="course-description">Description</FieldLabel>
-					<textarea
+					<Textarea
 						id="course-description"
 						v-bind="field"
 						:default-value="initialValues.description"
-						rows="5"
 						placeholder="Summarize what this course covers and who it is for."
-						class="block min-h-28 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20"
+						class="min-h-28"
 						:aria-invalid="!!errors.length"
 					/>
 					<FieldError v-if="errors.length" :errors="errors" />
