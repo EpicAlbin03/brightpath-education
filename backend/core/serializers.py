@@ -133,9 +133,11 @@ class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
+    student_count = serializers.IntegerField(read_only=True)
+    
     class Meta:
         model = Course
-        fields = ['id', 'name', 'code', 'description']
+        fields = ['id', 'name', 'code', 'description', 'student_count']
 
 
 class StudentSerializer(serializers.ModelSerializer):
