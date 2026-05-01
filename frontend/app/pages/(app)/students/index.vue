@@ -9,6 +9,7 @@ const accessToken = import.meta.client ? localStorage.getItem('access_token') : 
 const {
 	data: studentsResponse,
 	pending,
+	status,
 	error
 } = await useFetch<Student[]>(() => `${config.public.apiBase}/students/`, {
 	server: false,
@@ -31,13 +32,15 @@ const students = computed<Student[]>(() =>
 		}))
 		.sort((a, b) => a.id - b.id)
 );
+
+const isLoading = computed(() => status.value === 'idle' || pending.value);
 </script>
 
 <template>
 	<section class="space-y-6">
 		<PageTitle title="Students" description="List of all students" />
 
-		<p v-if="pending" class="text-sm text-muted-foreground">Loading students...</p>
+		<p v-if="isLoading" class="text-sm text-muted-foreground">Loading students...</p>
 		<p v-else-if="error" class="text-sm text-destructive">Failed to load students.</p>
 		<StudentsDataTable v-else :students="students" />
 	</section>
