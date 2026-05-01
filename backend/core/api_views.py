@@ -14,7 +14,8 @@ class StudentListCreateAPIView(generics.ListCreateAPIView):
     GET /students/ - List all students with their courses
     POST /students/ - Create a new student and enroll in courses
     """
-    queryset = Student.objects.prefetch_related('courses').all()
+    # queryset = Student.objects.prefetch_related('courses').all()
+    queryset = Student.objects.annotate(course_count=Count('courses'))
     serializer_class = StudentSerializer
     #permission_classes = [IsAuthenticated]
 
