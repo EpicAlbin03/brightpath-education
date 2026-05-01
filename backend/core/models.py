@@ -9,10 +9,10 @@ class Student(models.Model):
     date_of_birth = models.DateField(null=True, blank=True)
     grade = models.CharField(max_length=2, default='N/A')
     is_active = models.BooleanField(default=True)
-    course = models.ForeignKey(
+    courses = models.ManyToManyField(
         'Course',
-        on_delete=models.CASCADE,
         related_name='students',
+        blank=True
     )
     # created_by = models.ForeignKey(
     #     User,
