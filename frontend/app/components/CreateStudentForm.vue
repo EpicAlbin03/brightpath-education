@@ -7,6 +7,7 @@ import { ref } from 'vue';
 import { Field as VeeField, useForm } from 'vee-validate';
 import { toast } from 'vue-sonner';
 import { studentFormSchema, studentGradeOptions, type StudentFormSchema } from '@/lib/schemas';
+import type { Course } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
@@ -20,6 +21,10 @@ import {
 	SelectValue
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
+
+const props = defineProps<{
+	courses: Course[];
+}>();
 
 const emit = defineEmits<{
 	created: [payload: StudentFormSchema];
@@ -35,7 +40,8 @@ const initialValues: StudentFormSchema = {
 	name: '',
 	email: '',
 	date_of_birth: '',
-	grade: 'NA'
+	grade: 'NA',
+	course_ids: []
 };
 
 const parseStudentDate = (value: string) => {
@@ -173,6 +179,47 @@ const onSubmit = handleSubmit(async (values) => {
 						<SelectContent position="item-aligned">
 							<SelectItem v-for="grade in studentGradeOptions" :key="grade" :value="grade">
 								{{ grade }}
+							</SelectItem>
+						</SelectContent>
+					</Select>
+					<FieldError v-if="errors.length" :errors="errors" />
+				</Field>
+			</VeeField>
+
+			<VeeField v-slot="{ field, errors }" name="course_ids">
+				<Field :data-invalid="!!errors.length">
+					<FieldLabel for="student-courses">Courses</FieldLabel>
+					<Select
+						id="student-courses"
+						multiple
+						:model-value="(field.value ?? []).map(String)"
+						:disabled="!props.courses.length"
+						@update:model-value="
+							(value) =>
+								field.onChange(
+									Array.isArray(value)
+										? value.map((item: string | number) => Number(item))
+										: value
+											? [Number(value)]
+											: []
+								)
+						"
+						@blur="field.onBlur"
+					>
+						<SelectTrigger class="w-full" :aria-invalid="!!errors.length">
+							<SelectValue
+								:placeholder="props.courses.length ? 'Select courses' : 'No courses available'"
+							>
+								<span v-if="field.value?.length">{{ field.value.length }} selected</span>
+							</SelectValue>
+						</SelectTrigger>
+						<SelectContent position="item-aligned">
+							<SelectItem
+								v-for="course in props.courses"
+								:key="course.id"
+								:value="String(course.id)"
+							>
+								{{ course.name }}
 							</SelectItem>
 						</SelectContent>
 					</Select>

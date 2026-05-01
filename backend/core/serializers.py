@@ -148,6 +148,13 @@ class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
 class CourseSerializer(serializers.ModelSerializer):
     student_count = serializers.IntegerField(read_only=True)
     students = serializers.SerializerMethodField(read_only=True)
+    student_ids = serializers.PrimaryKeyRelatedField(
+        queryset=Student.objects.all(),
+        many=True,
+        write_only=True,
+        source="students",
+        required=False,
+    )
 
     def get_fields(self):
         fields = super().get_fields()
@@ -169,12 +176,46 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ["id", "name", "code", "description", "student_count", "students"]
+        fields = [
+            "id",
+            "name",
+            "code",
+            "description",
+            "student_count",
+            "students",
+            "student_ids",
+        ]
+
+    def create(self, validated_data):
+        students = validated_data.pop("students", [])
+        course = Course.objects.create(**validated_data)
+        if students:
+            course.students.set(students)
+        return course
+
+    def update(self, instance, validated_data):
+        students = validated_data.pop("students", None)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        if students is not None:
+            instance.students.set(students)
+
+        return instance
 
 
 class StudentSerializer(serializers.ModelSerializer):
     course_count = serializers.IntegerField(read_only=True)
     courses = serializers.SerializerMethodField(read_only=True)
+    course_ids = serializers.PrimaryKeyRelatedField(
+        queryset=Course.objects.all(),
+        many=True,
+        write_only=True,
+        source="courses",
+        required=False,
+    )
 
     def get_fields(self):
         fields = super().get_fields()
@@ -214,7 +255,15 @@ class StudentSerializer(serializers.ModelSerializer):
             "is_active",
             "course_count",
             "courses",
+            "course_ids",
         ]
+
+    def create(self, validated_data):
+        courses = validated_data.pop("courses", [])
+        student = Student.objects.create(**validated_data)
+        if courses:
+            student.courses.set(courses)
+        return student
 
     def update(self, instance, validated_data):
         """Handle ManyToMany update for courses"""

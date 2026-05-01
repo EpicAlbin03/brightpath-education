@@ -4,14 +4,22 @@ import { Field as VeeField, useForm } from 'vee-validate';
 import { computed } from 'vue';
 import { toast } from 'vue-sonner';
 import { courseFormSchema, type CourseFormSchema } from '@/lib/schemas';
-import type { Course } from '@/lib/types';
+import type { Course, Student } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 
 const props = defineProps<{
 	course: Course;
+	students: Student[];
 }>();
 
 const emit = defineEmits<{
@@ -23,7 +31,8 @@ const config = useRuntimeConfig();
 const initialValues = computed<CourseFormSchema>(() => ({
 	name: props.course.name,
 	code: props.course.code,
-	description: props.course.description
+	description: props.course.description,
+	student_ids: props.course.students?.map((student) => student.id) ?? props.course.student_ids ?? []
 }));
 
 const { handleSubmit, isSubmitting, resetForm } = useForm({
@@ -97,6 +106,47 @@ const onSubmit = handleSubmit(async (values) => {
 						class="min-h-28"
 						:aria-invalid="!!errors.length"
 					/>
+					<FieldError v-if="errors.length" :errors="errors" />
+				</Field>
+			</VeeField>
+
+			<VeeField v-slot="{ field, errors }" name="student_ids">
+				<Field :data-invalid="!!errors.length">
+					<FieldLabel for="course-students">Students</FieldLabel>
+					<Select
+						id="course-students"
+						multiple
+						:model-value="(field.value ?? []).map(String)"
+						:disabled="!props.students.length"
+						@update:model-value="
+							(value) =>
+								field.onChange(
+									Array.isArray(value)
+										? value.map((item: string | number) => Number(item))
+										: value
+											? [Number(value)]
+											: []
+								)
+						"
+						@blur="field.onBlur"
+					>
+						<SelectTrigger class="w-full" :aria-invalid="!!errors.length">
+							<SelectValue
+								:placeholder="props.students.length ? 'Select students' : 'No students available'"
+							>
+								<span v-if="field.value?.length">{{ field.value.length }} selected</span>
+							</SelectValue>
+						</SelectTrigger>
+						<SelectContent position="item-aligned">
+							<SelectItem
+								v-for="student in props.students"
+								:key="student.id"
+								:value="String(student.id)"
+							>
+								{{ student.name }}
+							</SelectItem>
+						</SelectContent>
+					</Select>
 					<FieldError v-if="errors.length" :errors="errors" />
 				</Field>
 			</VeeField>

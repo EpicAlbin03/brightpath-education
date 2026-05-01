@@ -4,6 +4,8 @@ export type Course = {
 	code: string;
 	description: string;
 	student_count: number;
+	student_ids?: number[];
+	students?: Student[];
 };
 
 export type Student = {
@@ -15,4 +17,6 @@ export type Student = {
 	grade: string;
 	is_active: boolean;
 	course_count: number;
+	course_ids?: number[];
+	courses?: Course[];
 };
