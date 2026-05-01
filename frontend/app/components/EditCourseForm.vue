@@ -1,0 +1,119 @@
+<script setup lang="ts">
+import { toTypedSchema } from '@vee-validate/zod';
+import { Field as VeeField, useForm } from 'vee-validate';
+import { computed } from 'vue';
+import { toast } from 'vue-sonner';
+import { courseFormSchema, type CourseFormSchema } from '@/lib/schemas';
+import type { Course } from '@/lib/types';
+import { Button } from '@/components/ui/button';
+import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+
+const props = defineProps<{
+	course: Course;
+}>();
+
+const emit = defineEmits<{
+	updated: [payload: CourseFormSchema];
+}>();
+
+const config = useRuntimeConfig();
+
+const initialValues = computed<CourseFormSchema>(() => ({
+	name: props.course.name,
+	code: props.course.code,
+	description: props.course.description
+}));
+
+const { handleSubmit, isSubmitting, resetForm } = useForm({
+	validationSchema: toTypedSchema(courseFormSchema),
+	initialValues: initialValues.value
+});
+
+const onSubmit = handleSubmit(async (values) => {
+	const accessToken = localStorage.getItem('access_token');
+
+	try {
+		await $fetch(`${config.public.apiBase}/courses/${props.course.id}/`, {
+			method: 'PUT',
+			body: values,
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+				'Content-Type': 'application/json'
+			}
+		});
+
+		emit('updated', values);
+		resetForm({ values });
+		toast.success('Course updated successfully.');
+	} catch (error) {
+		console.error(error instanceof Error ? error.message : error);
+		toast.error('Failed to update course. Please try again later.');
+	}
+});
+</script>
+
+<template>
+	<form class="max-w-lg space-y-6" novalidate @submit="onSubmit">
+		<FieldSet class="gap-5">
+			<VeeField v-slot="{ field, errors }" name="name" :validate-on-input="true">
+				<Field :data-invalid="!!errors.length">
+					<FieldLabel for="course-name">Course name</FieldLabel>
+					<Input
+						id="course-name"
+						v-bind="field"
+						:default-value="initialValues.name"
+						placeholder="Introduction to Mathematics"
+						:aria-invalid="!!errors.length"
+					/>
+					<FieldError v-if="errors.length" :errors="errors" />
+				</Field>
+			</VeeField>
+
+			<VeeField v-slot="{ field, errors }" name="code" :validate-on-input="true">
+				<Field :data-invalid="!!errors.length">
+					<FieldLabel for="course-code">Course code</FieldLabel>
+					<Input
+						id="course-code"
+						v-bind="field"
+						:default-value="initialValues.code"
+						placeholder="MATH101"
+						autocomplete="off"
+						:aria-invalid="!!errors.length"
+					/>
+					<FieldError v-if="errors.length" :errors="errors" />
+				</Field>
+			</VeeField>
+
+			<VeeField v-slot="{ field, errors }" name="description" :validate-on-input="true">
+				<Field :data-invalid="!!errors.length">
+					<FieldLabel for="course-description">Description</FieldLabel>
+					<textarea
+						id="course-description"
+						v-bind="field"
+						:default-value="initialValues.description"
+						rows="5"
+						placeholder="Summarize what this course covers and who it is for."
+						class="block min-h-28 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20"
+						:aria-invalid="!!errors.length"
+					/>
+					<FieldError v-if="errors.length" :errors="errors" />
+				</Field>
+			</VeeField>
+		</FieldSet>
+
+		<div class="flex items-center gap-3">
+			<Button type="submit" :disabled="isSubmitting">
+				{{ isSubmitting ? 'Updating course...' : 'Update course' }}
+			</Button>
+			<Button
+				type="button"
+				variant="outline"
+				:disabled="isSubmitting"
+				@click="resetForm({ values: initialValues })"
+			>
+				Reset
+			</Button>
+		</div>
+	</form>
+</template>
