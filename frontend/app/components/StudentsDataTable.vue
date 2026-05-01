@@ -198,20 +198,29 @@ const columns: ColumnDef<Student>[] = [
 	{
 		id: 'select',
 		header: ({ table }) =>
-			h(Checkbox, {
-				modelValue: table.getIsAllPageRowsSelected(),
-				'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
-					table.toggleAllPageRowsSelected(value === true),
-				'aria-label': 'Select all students'
-			}),
+			h('div', { class: 'pr-3' }, [
+				h(Checkbox, {
+					modelValue: table.getIsAllPageRowsSelected(),
+					'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
+						table.toggleAllPageRowsSelected(value === true),
+					'aria-label': 'Select all students'
+				})
+			]),
 		cell: ({ row }) =>
-			h(Checkbox, {
-				modelValue: row.getIsSelected(),
-				'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
-					row.toggleSelected(value === true),
-				'aria-label': `Select ${row.original.name}`
-			}),
+			h('div', { class: 'pr-3' }, [
+				h(Checkbox, {
+					modelValue: row.getIsSelected(),
+					'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
+						row.toggleSelected(value === true),
+					'aria-label': `Select ${row.original.name}`
+				})
+			]),
 		enableSorting: false
+	},
+	{
+		accessorKey: 'id',
+		header: ({ column }) => sortableHeader('ID', column),
+		cell: ({ row }) => h('div', { class: 'font-medium tabular-nums' }, row.original.id)
 	},
 	{
 		accessorKey: 'name',
