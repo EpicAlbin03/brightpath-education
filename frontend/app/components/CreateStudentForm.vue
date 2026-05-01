@@ -5,6 +5,7 @@ import { CalendarIcon } from 'lucide-vue-next';
 import type { DateValue } from 'reka-ui';
 import { ref } from 'vue';
 import { Field as VeeField, useForm } from 'vee-validate';
+import { toast } from 'vue-sonner';
 import { studentFormSchema, studentGradeOptions, type StudentFormSchema } from '@/lib/schemas';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -25,8 +26,6 @@ const emit = defineEmits<{
 }>();
 
 const config = useRuntimeConfig();
-const submitError = ref<string | null>(null);
-const submitSuccess = ref<string | null>(null);
 const isDatePickerOpen = ref(false);
 const localTimeZone = getLocalTimeZone();
 const dateFormatter = new DateFormatter('en-US', { dateStyle: 'long' });
@@ -71,10 +70,7 @@ const { handleSubmit, isSubmitting, resetForm } = useForm({
 });
 
 const onSubmit = handleSubmit(async (values) => {
-	submitError.value = null;
-	submitSuccess.value = null;
 	const accessToken = localStorage.getItem('access_token');
-	console.log(values);
 
 	try {
 		await $fetch(`${config.public.apiBase}/students/`, {
@@ -87,10 +83,10 @@ const onSubmit = handleSubmit(async (values) => {
 
 		emit('created', values);
 		resetForm({ values: initialValues });
-		submitSuccess.value = 'Student created successfully.';
+		toast.success('Student created successfully.');
 	} catch (error) {
-		submitError.value =
-			error instanceof Error ? error.message : 'Unable to create student right now.';
+		console.error(error instanceof Error ? error.message : error);
+		toast.error('Failed to create student. Please try again later.');
 	}
 });
 </script>
@@ -184,13 +180,6 @@ const onSubmit = handleSubmit(async (values) => {
 				</Field>
 			</VeeField>
 		</FieldSet>
-
-		<p v-if="submitError" class="text-sm text-destructive">
-			{{ submitError }}
-		</p>
-		<p v-else-if="submitSuccess" class="text-sm text-emerald-600">
-			{{ submitSuccess }}
-		</p>
 
 		<div class="flex items-center gap-3">
 			<Button type="submit" :disabled="isSubmitting">

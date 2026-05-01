@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod';
-import { ref } from 'vue';
 import { Field as VeeField, useForm } from 'vee-validate';
+import { toast } from 'vue-sonner';
 import { courseFormSchema, type CourseFormSchema } from '@/lib/schemas';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
@@ -12,8 +12,6 @@ const emit = defineEmits<{
 }>();
 
 const config = useRuntimeConfig();
-const submitError = ref<string | null>(null);
-const submitSuccess = ref<string | null>(null);
 
 const initialValues: CourseFormSchema = {
 	name: '',
@@ -31,8 +29,6 @@ const { handleSubmit, isSubmitting, resetForm } = useForm({
 });
 
 const onSubmit = handleSubmit(async (values) => {
-	submitError.value = null;
-	submitSuccess.value = null;
 	const accessToken = localStorage.getItem('access_token');
 
 	try {
@@ -47,10 +43,10 @@ const onSubmit = handleSubmit(async (values) => {
 
 		emit('created', values);
 		resetForm({ values: initialValues });
-		submitSuccess.value = 'Course created successfully.';
+		toast.success('Course created successfully.');
 	} catch (error) {
-		submitError.value =
-			error instanceof Error ? error.message : 'Unable to create course right now.';
+		console.error(error instanceof Error ? error.message : error);
+		toast.error('Failed to create course. Please try again later.');
 	}
 });
 </script>
@@ -100,13 +96,6 @@ const onSubmit = handleSubmit(async (values) => {
 				</Field>
 			</VeeField>
 		</FieldSet>
-
-		<p v-if="submitError" class="text-sm text-destructive">
-			{{ submitError }}
-		</p>
-		<p v-else-if="submitSuccess" class="text-sm text-emerald-600">
-			{{ submitSuccess }}
-		</p>
 
 		<div class="flex items-center gap-3">
 			<Button type="submit" :disabled="isSubmitting">
