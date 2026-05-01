@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from .models import Student, Course
 from .serializers import StudentSerializer, CourseSerializer, StudentCourseEnrollmentSerializer
 from rest_framework.permissions import IsAuthenticated
+from django.db.models import Count
 
 
 # ──── Student CRUD endpoints (Updated for ManyToMany) ────
@@ -13,7 +14,8 @@ class StudentListCreateAPIView(generics.ListCreateAPIView):
     GET /students/ - List all students with their courses
     POST /students/ - Create a new student and enroll in courses
     """
-    queryset = Student.objects.prefetch_related('courses').all()
+    # queryset = Student.objects.prefetch_related('courses').all()
+    queryset = Student.objects.annotate(course_count=Count('courses'))
     serializer_class = StudentSerializer
     #permission_classes = [IsAuthenticated]
 
@@ -115,7 +117,7 @@ class CourseListCreateAPIView(generics.ListCreateAPIView):
     GET /courses/ - List all courses
     POST /courses/ - Create a new course
     """
-    queryset = Course.objects.all()
+    queryset = Course.objects.annotate(student_count=Count('students'))
     serializer_class = CourseSerializer
     #permission_classes = [IsAuthenticated]
 

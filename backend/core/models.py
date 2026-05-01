@@ -7,7 +7,7 @@ class Student(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     date_of_birth = models.DateField(null=True, blank=True)
-    grade = models.CharField(max_length=2, default='N/A')
+    grade = models.CharField(max_length=3, default='N/A')
     is_active = models.BooleanField(default=True)
     courses = models.ManyToManyField(
         'Course',

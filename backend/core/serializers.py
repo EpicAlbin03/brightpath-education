@@ -133,27 +133,30 @@ class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
+    student_count = serializers.IntegerField(read_only=True)
+    
     class Meta:
         model = Course
-        fields = ['id', 'name', 'code', 'description']
+        fields = ['id', 'name', 'code', 'description', 'student_count']
 
 
 class StudentSerializer(serializers.ModelSerializer):
     # For reading: show full course details in nested format
-    courses = CourseSerializer(many=True, read_only=True)
+    # courses = CourseSerializer(many=True, read_only=True)
+    course_count = serializers.IntegerField(read_only=True)
     
     # For writing: accept course IDs and map them to courses field
-    course_ids = serializers.PrimaryKeyRelatedField(
-        queryset=Course.objects.all(),
-        many=True,
-        write_only=True,
-        source='courses',
-        required=False
-    )
+    # course_ids = serializers.PrimaryKeyRelatedField(
+    #     queryset=Course.objects.all(),
+    #     many=True,
+    #     write_only=True,
+    #     source='courses',
+    #     required=False
+    # )
 
     class Meta:
         model = Student
-        fields = ['id', 'name', 'email', 'date_of_birth', 'grade', 'is_active', 'courses', 'course_ids']
+        fields = ['id', 'name', 'email', 'date_of_birth', 'grade', 'is_active', 'course_count']
 
     def update(self, instance, validated_data):
         """Handle ManyToMany update for courses"""
