@@ -71,9 +71,10 @@ const updateStudentDate = (value: DateValue | undefined, onChange: (value: strin
 	}
 };
 
-const { handleSubmit, isSubmitting, resetForm } = useForm({
+const { handleSubmit, isSubmitting, meta, resetForm } = useForm({
 	validationSchema: toTypedSchema(studentFormSchema),
-	initialValues: initialValues.value
+	initialValues: initialValues.value,
+	validateOnMount: true
 });
 
 const onSubmit = handleSubmit(async (values) => {
@@ -232,7 +233,7 @@ const onSubmit = handleSubmit(async (values) => {
 		</FieldSet>
 
 		<div class="flex items-center gap-3">
-			<Button type="submit" :disabled="isSubmitting">
+			<Button type="submit" :disabled="isSubmitting || !meta.dirty || !meta.valid">
 				{{ isSubmitting ? 'Updating student...' : 'Update student' }}
 			</Button>
 			<Button

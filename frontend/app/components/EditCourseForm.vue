@@ -35,9 +35,10 @@ const initialValues = computed<CourseFormSchema>(() => ({
 	student_ids: props.course.students?.map((student) => student.id) ?? props.course.student_ids ?? []
 }));
 
-const { handleSubmit, isSubmitting, resetForm } = useForm({
+const { handleSubmit, isSubmitting, meta, resetForm } = useForm({
 	validationSchema: toTypedSchema(courseFormSchema),
-	initialValues: initialValues.value
+	initialValues: initialValues.value,
+	validateOnMount: true
 });
 
 const onSubmit = handleSubmit(async (values) => {
@@ -153,7 +154,7 @@ const onSubmit = handleSubmit(async (values) => {
 		</FieldSet>
 
 		<div class="flex items-center gap-3">
-			<Button type="submit" :disabled="isSubmitting">
+			<Button type="submit" :disabled="isSubmitting || !meta.dirty || !meta.valid">
 				{{ isSubmitting ? 'Updating course...' : 'Update course' }}
 			</Button>
 			<Button

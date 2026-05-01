@@ -33,7 +33,7 @@ const initialValues: CourseFormSchema = {
 	student_ids: []
 };
 
-const { handleSubmit, isSubmitting, resetForm } = useForm({
+const { handleSubmit, isSubmitting, meta, resetForm } = useForm({
 	validationSchema: toTypedSchema(courseFormSchema),
 	initialValues
 });
@@ -148,7 +148,7 @@ const onSubmit = handleSubmit(async (values) => {
 		</FieldSet>
 
 		<div class="flex items-center gap-3">
-			<Button type="submit" :disabled="isSubmitting">
+			<Button type="submit" :disabled="isSubmitting || !meta.dirty || !meta.valid">
 				{{ isSubmitting ? 'Creating course...' : 'Create course' }}
 			</Button>
 			<Button
