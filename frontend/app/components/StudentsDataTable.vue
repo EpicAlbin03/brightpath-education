@@ -256,8 +256,8 @@ const columns: ColumnDef<Student>[] = [
 	{
 		id: 'courseCount',
 		header: ({ column }) => sortableHeader('Courses', column),
-		accessorFn: (row) => row.course_ids.length,
-		cell: ({ row }) => h('div', { class: 'font-medium' }, row.original.course_ids.length)
+		accessorKey: 'courseCount',
+		cell: ({ row }) => h('div', { class: 'font-medium' }, row.original.courseCount)
 	},
 	{
 		accessorKey: 'is_active',

@@ -50,15 +50,11 @@ import {
 	TableRow
 } from '@/components/ui/table';
 import { valueUpdater } from '@/components/ui/table/utils';
-import { courses, students } from '@/lib/temp-data';
+import { courses } from '@/lib/temp-data';
 
 const router = useRouter();
 const searchQuery = ref('');
 const courseRows = ref(courses.map((course) => ({ ...course })));
-
-type CourseRow = Course & {
-	studentCount: number;
-};
 
 const pageSizes = [5, 10, 25, 50];
 
@@ -152,25 +148,10 @@ const RowActions = defineComponent({
 
 const sorting = ref<SortingState>([]);
 const rowSelection = ref<RowSelectionState>({});
-
-const rawData = computed<CourseRow[]>(() => {
-	const studentCounts = students.reduce<Record<number, number>>((counts, student) => {
-		for (const courseId of student.course_ids) {
-			counts[courseId] = (counts[courseId] ?? 0) + 1;
-		}
-		return counts;
-	}, {});
-
-	return courseRows.value.map((course) => ({
-		...course,
-		studentCount: studentCounts[course.id] ?? 0
-	}));
-});
-
-const data = computed<CourseRow[]>(() => {
+const data = computed<Course[]>(() => {
 	const query = searchQuery.value.trim().toLowerCase();
 
-	return rawData.value.filter((course) => {
+	return courseRows.value.filter((course) => {
 		return (
 			query.length === 0 ||
 			String(course.id).includes(query) ||
@@ -180,7 +161,7 @@ const data = computed<CourseRow[]>(() => {
 	});
 });
 
-const columns: ColumnDef<CourseRow>[] = [
+const columns: ColumnDef<Course>[] = [
 	// {
 	// 	id: 'select',
 	// 	header: ({ table }) =>
