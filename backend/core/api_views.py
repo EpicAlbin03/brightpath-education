@@ -46,6 +46,7 @@ class StudentCoursesListAPIView(generics.ListAPIView):
 
 class StudentCoursesEnrollAPIView(generics.GenericAPIView):
     """
+    GET /students/{student_id}/courses/ - List all courses a student is enrolled in
     POST /students/{student_id}/courses/ - Enroll student in courses
     
     Request body:
@@ -53,24 +54,30 @@ class StudentCoursesEnrollAPIView(generics.GenericAPIView):
         "course_ids": [1, 2, 3]  <- IDs of courses to enroll in
     }
     
-    SET MODE: Replaces all existing enrollments with the provided courses.
+    ADD MODE: Adds the provided courses to the student's existing enrollments.
     Example: If student is in courses [1, 2], and we send [5, 7],
-             they will now be ONLY in courses [5, 7].
+             they will now be in [1, 2, 5, 7].
     """
     serializer_class = StudentCourseEnrollmentSerializer
+    queryset = Student.objects.prefetch_related('courses').all()
     #permission_classes = [IsAuthenticated]
 
     def get_object(self):
         return get_object_or_404(Student, pk=self.kwargs["student_id"])
+
+    def get(self, request, *args, **kwargs):
+        student = self.get_object()
+        serializer = CourseSerializer(student.courses.all(), many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
         student = self.get_object()
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
-        # Enroll student in courses (SET mode - replaces all)
+        # Enroll student in courses (ADD mode - preserves existing)
         courses = serializer.validated_data.get('course_ids', [])
-        student.courses.set(courses)
+        student.courses.add(*courses)
         
         # Return updated student with full details
         student_serializer = StudentSerializer(

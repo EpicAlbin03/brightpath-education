@@ -16,18 +16,30 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from .serializers import EmailTokenObtainPairSerializer
 from .api_views import (
     StudentListCreateAPIView,
     StudentRetrieveUpdateDestroyAPIView,
-    StudentCoursesListAPIView,
     StudentCoursesEnrollAPIView,
     StudentCourseUnenrollAPIView,
     CourseListCreateAPIView,
     CourseRetrieveUpdateDestroyAPIView,
     CourseStudentsListAPIView
 )
+from .views import GoogleLoginView, MeView, RegisterView
+
+
+class EmailTokenObtainPairView(TokenObtainPairView):
+    serializer_class = EmailTokenObtainPairSerializer
 
 urlpatterns = [
+
+    # API auth endpoints (mirrors core.urls auth routes)
+    path('auth/register/', RegisterView.as_view(), name='api-auth-register'),
+    path('auth/login/', EmailTokenObtainPairView.as_view(), name='api-auth-login'),
+    path('auth/refresh/', TokenRefreshView.as_view(), name='api-auth-refresh'),
+    path('auth/me/', MeView.as_view(), name='api-auth-me'),
+    path('auth/google/', GoogleLoginView.as_view(), name='api-auth-google'),
 
     # JWT Authentication endpoints
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
@@ -41,8 +53,7 @@ urlpatterns = [
     path('students/<int:pk>/', StudentRetrieveUpdateDestroyAPIView.as_view(), name='student-retrieve-update-destroy'),
 
     # NEW: Student Course Enrollment endpoints
-    path('students/<int:student_id>/courses/', StudentCoursesListAPIView.as_view(), name='student-courses-list'),
-    path('students/<int:student_id>/courses/', StudentCoursesEnrollAPIView.as_view(), name='student-courses-enroll'),
+    path('students/<int:student_id>/courses/', StudentCoursesEnrollAPIView.as_view(), name='student-courses'),
     path('students/<int:student_id>/courses/<int:course_id>/', StudentCourseUnenrollAPIView.as_view(), name='student-course-unenroll'),
 
     # API endpoints for Course model (CRUD)
