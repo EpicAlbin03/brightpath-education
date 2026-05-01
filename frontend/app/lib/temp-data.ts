@@ -96,7 +96,7 @@ export const students: Student[] = [
 		profile_photo: 'https://github.com/shadcn.png',
 		email: 'ethan.walker@example.com',
 		date_of_birth: null,
-		grade: 'NA',
+		grade: 'N/A',
 		is_active: true,
 		course_count: 1
 	},

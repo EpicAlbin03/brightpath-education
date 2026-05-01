@@ -17,7 +17,7 @@ export const studentGradeOptions = [
 	'D+',
 	'D',
 	'F',
-	'NA'
+	'N/A'
 ] as const;
 
 export const courseFormSchema = z.object({

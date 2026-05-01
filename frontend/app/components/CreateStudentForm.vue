@@ -40,7 +40,7 @@ const initialValues: StudentFormSchema = {
 	name: '',
 	email: '',
 	date_of_birth: '',
-	grade: 'NA',
+	grade: 'N/A',
 	course_ids: []
 };
 
