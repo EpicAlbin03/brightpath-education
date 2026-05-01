@@ -50,11 +50,14 @@ import {
 	TableRow
 } from '@/components/ui/table';
 import { valueUpdater } from '@/components/ui/table/utils';
-import { courses } from '@/lib/temp-data';
+
+const props = defineProps<{
+	courses: Course[];
+}>();
 
 const router = useRouter();
 const searchQuery = ref('');
-const courseRows = ref(courses.map((course) => ({ ...course })));
+const courseRows = ref<Course[]>([]);
 
 const pageSizes = [5, 10, 25, 50];
 
@@ -161,6 +164,14 @@ const data = computed<Course[]>(() => {
 	});
 });
 
+watch(
+	() => props.courses,
+	(courses) => {
+		courseRows.value = courses.map((course) => ({ ...course }));
+	},
+	{ immediate: true }
+);
+
 const columns: ColumnDef<Course>[] = [
 	// {
 	// 	id: 'select',
@@ -212,9 +223,9 @@ const columns: ColumnDef<Course>[] = [
 			)
 	},
 	{
-		accessorKey: 'studentCount',
+		accessorKey: 'student_count',
 		header: ({ column }) => sortableHeader('Students', column),
-		cell: ({ row }) => h('div', { class: 'font-medium' }, row.original.studentCount)
+		cell: ({ row }) => h('div', { class: 'font-medium' }, row.original.student_count)
 	},
 	{
 		id: 'actions',

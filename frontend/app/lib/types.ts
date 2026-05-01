@@ -3,7 +3,7 @@ export type Course = {
 	name: string;
 	code: string;
 	description: string;
-	studentCount: number;
+	student_count: number;
 };
 
 export type Student = {
@@ -14,5 +14,5 @@ export type Student = {
 	date_of_birth: string | null;
 	grade: string;
 	is_active: boolean;
-	courseCount: number;
+	course_count: number;
 };

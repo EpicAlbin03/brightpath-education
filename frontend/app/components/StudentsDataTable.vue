@@ -51,7 +51,10 @@ import {
 	TableRow
 } from '@/components/ui/table';
 import { valueUpdater } from '@/components/ui/table/utils';
-import { students } from '@/lib/temp-data';
+
+const props = defineProps<{
+	students: Student[];
+}>();
 
 const router = useRouter();
 
@@ -59,7 +62,7 @@ const pageSizes = [5, 10, 25, 50];
 const searchQuery = ref('');
 const statusFilter = ref<'all' | 'active' | 'inactive'>('all');
 const gradeFilter = ref('all');
-const studentRows = ref(students.map((student) => ({ ...student })));
+const studentRows = ref<Student[]>([]);
 
 const gradeRanks: Record<string, number> = {
 	'A+': 12,
@@ -189,7 +192,7 @@ const gradeSortingFn: SortingFn<Student> = (rowA, rowB, columnId) => {
 };
 
 const gradeOptions = computed(() =>
-	Array.from(new Set(students.map((student) => student.grade))).sort(
+	Array.from(new Set(studentRows.value.map((student) => student.grade))).sort(
 		(a, b) => getGradeRank(b) - getGradeRank(a)
 	)
 );
@@ -254,10 +257,10 @@ const columns: ColumnDef<Student>[] = [
 		cell: ({ row }) => h('div', { class: 'font-medium' }, row.original.grade)
 	},
 	{
-		id: 'courseCount',
+		id: 'course_count',
 		header: ({ column }) => sortableHeader('Courses', column),
-		accessorKey: 'courseCount',
-		cell: ({ row }) => h('div', { class: 'font-medium' }, row.original.courseCount)
+		accessorKey: 'course_count',
+		cell: ({ row }) => h('div', { class: 'font-medium' }, row.original.course_count)
 	},
 	{
 		accessorKey: 'is_active',
@@ -316,6 +319,14 @@ const data = computed(() => {
 		return matchesQuery && matchesStatus && matchesGrade;
 	});
 });
+
+watch(
+	() => props.students,
+	(students) => {
+		studentRows.value = students.map((student) => ({ ...student }));
+	},
+	{ immediate: true }
+);
 
 const table = useVueTable({
 	get data() {

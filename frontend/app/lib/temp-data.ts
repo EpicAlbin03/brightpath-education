@@ -6,14 +6,14 @@ export const courses: Course[] = [
 		name: 'Introduction to Mathematics',
 		code: 'MATH101',
 		description: 'Builds confidence with algebra, arithmetic, and problem-solving fundamentals.',
-		studentCount: 2
+		student_count: 2
 	},
 	{
 		id: 2,
 		name: 'Foundations of English Literature',
 		code: 'ENG201',
 		description: 'Explores poetry, prose, and critical reading through modern and classic texts.',
-		studentCount: 20
+		student_count: 20
 	},
 	{
 		id: 3,
@@ -21,21 +21,21 @@ export const courses: Course[] = [
 		code: 'SCI110',
 		description:
 			'Introduces scientific thinking across biology, chemistry, and physics topics through lab reflections, collaborative experiments, data interpretation exercises, and real-world case studies that stretch across the full term.',
-		studentCount: 13
+		student_count: 13
 	},
 	{
 		id: 4,
 		name: 'World History',
 		code: 'HIST205',
 		description: 'Covers major global events, timelines, and cultural movements.',
-		studentCount: 5
+		student_count: 5
 	},
 	{
 		id: 5,
 		name: 'Computer Skills for Beginners',
 		code: 'COMP120',
 		description: 'Focuses on digital literacy, typing, productivity tools, and online safety.',
-		studentCount: 7
+		student_count: 7
 	}
 ];
 
@@ -48,7 +48,7 @@ export const students: Student[] = [
 		date_of_birth: '2008-03-14',
 		grade: 'A',
 		is_active: true,
-		courseCount: 2
+		course_count: 2
 	},
 	{
 		id: 2,
@@ -58,7 +58,7 @@ export const students: Student[] = [
 		date_of_birth: '2007-11-02',
 		grade: 'B+',
 		is_active: true,
-		courseCount: 1
+		course_count: 1
 	},
 	{
 		id: 3,
@@ -68,7 +68,7 @@ export const students: Student[] = [
 		date_of_birth: '2008-07-21',
 		grade: 'A-',
 		is_active: true,
-		courseCount: 2
+		course_count: 2
 	},
 	{
 		id: 4,
@@ -78,7 +78,7 @@ export const students: Student[] = [
 		date_of_birth: '2006-12-09',
 		grade: 'C+',
 		is_active: false,
-		courseCount: 1
+		course_count: 1
 	},
 	{
 		id: 5,
@@ -88,7 +88,7 @@ export const students: Student[] = [
 		date_of_birth: '2007-05-30',
 		grade: 'B',
 		is_active: true,
-		courseCount: 2
+		course_count: 2
 	},
 	{
 		id: 6,
@@ -98,7 +98,7 @@ export const students: Student[] = [
 		date_of_birth: null,
 		grade: 'NA',
 		is_active: true,
-		courseCount: 1
+		course_count: 1
 	},
 	{
 		id: 7,
@@ -108,7 +108,7 @@ export const students: Student[] = [
 		date_of_birth: '2008-01-17',
 		grade: 'A',
 		is_active: true,
-		courseCount: 2
+		course_count: 2
 	},
 	{
 		id: 8,
@@ -118,7 +118,7 @@ export const students: Student[] = [
 		date_of_birth: '2007-09-08',
 		grade: 'B-',
 		is_active: false,
-		courseCount: 3
+		course_count: 3
 	},
 	{
 		id: 9,
@@ -128,7 +128,7 @@ export const students: Student[] = [
 		date_of_birth: '2006-04-26',
 		grade: 'A+',
 		is_active: true,
-		courseCount: 2
+		course_count: 2
 	},
 	{
 		id: 10,
@@ -138,6 +138,6 @@ export const students: Student[] = [
 		date_of_birth: '2008-08-13',
 		grade: 'B',
 		is_active: true,
-		courseCount: 2
+		course_count: 2
 	}
 ];
