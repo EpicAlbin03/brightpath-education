@@ -195,32 +195,32 @@ const gradeOptions = computed(() =>
 );
 
 const columns: ColumnDef<Student>[] = [
-	{
-		id: 'select',
-		header: ({ table }) =>
-			h('div', { class: 'pr-3' }, [
-				h(Checkbox, {
-					modelValue: table.getIsAllPageRowsSelected(),
-					'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
-						table.toggleAllPageRowsSelected(value === true),
-					'aria-label': 'Select all students'
-				})
-			]),
-		cell: ({ row }) =>
-			h('div', { class: 'pr-3' }, [
-				h(Checkbox, {
-					modelValue: row.getIsSelected(),
-					'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
-						row.toggleSelected(value === true),
-					'aria-label': `Select ${row.original.name}`
-				})
-			]),
-		enableSorting: false
-	},
+	// {
+	// 	id: 'select',
+	// 	header: ({ table }) =>
+	// 		h('div', { class: '' }, [
+	// 			h(Checkbox, {
+	// 				modelValue: table.getIsAllPageRowsSelected(),
+	// 				'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
+	// 					table.toggleAllPageRowsSelected(value === true),
+	// 				'aria-label': 'Select all students'
+	// 			})
+	// 		]),
+	// 	cell: ({ row }) =>
+	// 		h('div', { class: '' }, [
+	// 			h(Checkbox, {
+	// 				modelValue: row.getIsSelected(),
+	// 				'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
+	// 					row.toggleSelected(value === true),
+	// 				'aria-label': `Select ${row.original.name}`
+	// 			})
+	// 		]),
+	// 	enableSorting: false
+	// },
 	{
 		accessorKey: 'id',
-		header: ({ column }) => sortableHeader('ID', column),
-		cell: ({ row }) => h('div', { class: 'font-medium tabular-nums' }, row.original.id)
+		header: ({ column }) => h('div', { class: 'pl-3' }, sortableHeader('ID', column)),
+		cell: ({ row }) => h('div', { class: 'pl-3 font-medium tabular-nums' }, row.original.id)
 	},
 	{
 		accessorKey: 'name',
