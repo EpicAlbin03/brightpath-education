@@ -218,13 +218,13 @@ const columns: ColumnDef<Student>[] = [
 		header: ({ column }) => sortableHeader('Student', column),
 		cell: ({ row }) =>
 			h('div', { class: 'flex items-center gap-3' }, [
-				h(Avatar, { class: 'size-8' }, () => [
-					h(AvatarImage, {
-						src: row.original.profile_photo || '',
-						alt: row.original.name
-					}),
-					h(AvatarFallback, () => row.original.name.slice(0, 2).toUpperCase())
-				]),
+				// h(Avatar, { class: 'size-8' }, () => [
+				// 	h(AvatarImage, {
+				// 		src: row.original.profile_photo || '',
+				// 		alt: row.original.name
+				// 	}),
+				// 	h(AvatarFallback, () => row.original.name.slice(0, 2).toUpperCase())
+				// ]),
 				h('div', { class: 'font-medium' }, row.original.name)
 			])
 	},
