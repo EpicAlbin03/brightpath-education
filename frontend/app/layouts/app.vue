@@ -13,23 +13,11 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import CookieConsent from '~/components/CookieConsent.vue';
+import { useCookieConsent } from '~/composables/useCookieConsent';
 
 const route = useRoute();
 const sidebarState = useCookie<boolean>('sidebar_state');
-const cookieConsent = useCookie<boolean | null>('cookie_consent', {
-	sameSite: 'lax',
-	maxAge: 60 * 60 * 24 * 365 * 10
-});
-
-const shouldShowCookieConsent = computed(() => cookieConsent.value == null);
-
-function handleCookieConsentAccept() {
-	cookieConsent.value = true;
-}
-
-function handleCookieConsentDecline() {
-	cookieConsent.value = false;
-}
+const { shouldShowCookieConsent, acceptCookieConsent, declineCookieConsent } = useCookieConsent();
 
 const breadcrumbSegments = computed(() => {
 	const pathSegments = route.path.split('/').filter(Boolean);
@@ -77,7 +65,7 @@ const breadcrumbSegments = computed(() => {
 		v-if="shouldShowCookieConsent"
 		variant="default"
 		learn-more-href="/privacy"
-		@accept="handleCookieConsentAccept"
-		@decline="handleCookieConsentDecline"
+		@accept="acceptCookieConsent"
+		@decline="declineCookieConsent"
 	/>
 </template>
