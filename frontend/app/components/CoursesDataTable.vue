@@ -65,7 +65,7 @@ const {
 } = useCourses();
 const { students, loading: studentsLoading, error: studentsError, fetchStudents } = useStudents();
 
-const courseRows = computed(() => courses.value.map((c) => ({ ...c })));
+const courseRows = ref<Course[]>([]);
 
 type CourseRow = Course & {
 	studentCount: number;
@@ -166,7 +166,7 @@ const rowSelection = ref<RowSelectionState>({});
 
 const rawData = computed<CourseRow[]>(() => {
 	const studentCounts = (students.value ?? []).reduce<Record<number, number>>((counts, student) => {
-		for (const courseId of student.course_ids) {
+		for (const courseId of student.course_ids ?? []) {
 			counts[courseId] = (counts[courseId] ?? 0) + 1;
 		}
 		return counts;
@@ -181,7 +181,7 @@ const rawData = computed<CourseRow[]>(() => {
 const data = computed<CourseRow[]>(() => {
 	const query = searchQuery.value.trim().toLowerCase();
 
-	return courseRows.value.filter((course) => {
+	return rawData.value.filter((course) => {
 		return (
 			query.length === 0 ||
 			String(course.id).includes(query) ||
@@ -190,14 +190,6 @@ const data = computed<CourseRow[]>(() => {
 		);
 	});
 });
-
-watch(
-	() => props.courses,
-	(courses) => {
-		courseRows.value = courses.map((course) => ({ ...course }));
-	},
-	{ immediate: true }
-);
 
 const columns: ColumnDef<Course>[] = [
 	// {
@@ -265,11 +257,8 @@ const columns: ColumnDef<Course>[] = [
 					onViewStudents: () => router.push(`/courses/${row.original.id}/students`),
 					onEdit: () => router.push(`/courses/${row.original.id}/edit`),
 					onDelete: async () => {
-						await $fetch(`/api/courses/${row.original.id}/delete`, {
-							method: 'POST'
-						});
-
-						courseRows.value = courseRows.value.filter((course) => course.id !== row.original.id);
+						await deleteCourse(row.original.id);
+						courseRows.value = courses.value.map((c) => ({ ...c }));
 					}
 				})
 			]),
@@ -318,8 +307,8 @@ watch(searchQuery, () => {
 });
 
 onMounted(async () => {
-	// Fetch both courses and students so we can compute counts
 	await Promise.all([fetchCourses(), fetchStudents()]);
+	courseRows.value = courses.value.map((c) => ({ ...c }));
 });
 </script>
 

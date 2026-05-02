@@ -312,14 +312,6 @@ const data = computed(() => {
 	});
 });
 
-watch(
-	() => props.students,
-	(students) => {
-		studentRows.value = students.map((student) => ({ ...student }));
-	},
-	{ immediate: true }
-);
-
 const table = useVueTable({
 	get data() {
 		return data.value;
