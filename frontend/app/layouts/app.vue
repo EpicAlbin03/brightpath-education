@@ -16,7 +16,7 @@ import CookieConsent from '~/components/CookieConsent.vue';
 
 const route = useRoute();
 const sidebarState = useCookie<boolean>('sidebar_state');
-const cookieConsent = useCookie<boolean | null>('cookieConsent', {
+const cookieConsent = useCookie<boolean | null>('cookie_consent', {
 	sameSite: 'lax',
 	maxAge: 60 * 60 * 24 * 365 * 10
 });
@@ -76,6 +76,7 @@ const breadcrumbSegments = computed(() => {
 	<CookieConsent
 		v-if="shouldShowCookieConsent"
 		variant="default"
+		learn-more-href="/privacy"
 		@accept="handleCookieConsentAccept"
 		@decline="handleCookieConsentDecline"
 	/>

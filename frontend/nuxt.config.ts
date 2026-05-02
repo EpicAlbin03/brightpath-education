@@ -10,11 +10,21 @@ export default defineNuxtConfig({
 	css: ['~/assets/css/tailwind.css'],
 	vite: {
 		optimizeDeps: {
-			include: ['@vueuse/core']
+			include: [
+				'@vueuse/core',
+				'@vue/devtools-core',
+				'@vue/devtools-kit',
+				'lucide-vue-next',
+				'vue-sonner',
+				'clsx',
+				'tailwind-merge',
+				'class-variance-authority',
+				'reka-ui'
+			]
 		},
 		plugins: [tailwindcss()]
 	},
-	modules: ['shadcn-nuxt', '@nuxt/eslint', '@nuxt/image', '@nuxtjs/color-mode'],
+	modules: ['shadcn-nuxt', '@nuxt/eslint', '@nuxt/image', '@nuxtjs/color-mode', '@nuxt/content'],
 	colorMode: {
 		preference: 'light',
 		fallback: 'light',

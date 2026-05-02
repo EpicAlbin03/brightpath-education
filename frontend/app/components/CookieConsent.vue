@@ -107,12 +107,12 @@ onBeforeUnmount(() => {
 					By clicking <span class="font-medium">"Accept"</span>, you agree to our use of cookies.
 				</p>
 
-				<a
+				<NuxtLink
 					:href="props.learnMoreHref"
 					class="text-xs text-primary underline underline-offset-4 hover:no-underline"
 				>
 					Learn more
-				</a>
+				</NuxtLink>
 			</CardContent>
 
 			<CardFooter class="flex gap-2 pt-2">
