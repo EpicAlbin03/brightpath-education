@@ -2,31 +2,10 @@
 import { LoaderCircle } from 'lucide-vue-next';
 import PageTitle from '~/components/PageTitle.vue';
 import StudentsDataTable from '~/components/StudentsDataTable.vue';
-import type { Student } from '~/lib/types';
+import type { Student } from '~~/shared/types';
 
-const {
-	data: studentsResponse,
-	pending,
-	status,
-	error
-} = await useFetch<Student[]>('/api/students/');
-
-const students = computed<Student[]>(() =>
-	(studentsResponse.value ?? [])
-		.map((student) => ({
-			id: student.id,
-			name: student.name,
-			profile_photo: student.profile_photo,
-			email: student.email,
-			date_of_birth: student.date_of_birth,
-			grade: student.grade,
-			is_active: student.is_active,
-			course_count: student.course_count,
-			course_ids: student.course_ids
-		}))
-		.sort((a, b) => a.id - b.id)
-);
-
+const { data, pending, status, error } = await useFetch<Student[]>('/api/students/');
+const students = computed<Student[]>(() => data.value ?? []);
 const isLoading = computed(() => status.value === 'idle' || pending.value);
 </script>
 

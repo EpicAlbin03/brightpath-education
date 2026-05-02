@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ColumnDef, RowSelectionState, SortingFn, SortingState } from '@tanstack/vue-table';
 import type { PropType } from 'vue';
-import type { Student } from '~/lib/types';
+import type { Student } from '~~/shared/types';
 import {
 	FlexRender,
 	getCoreRowModel,
@@ -227,17 +227,17 @@ const columns: ColumnDef<Student>[] = [
 	{
 		accessorKey: 'name',
 		header: ({ column }) => sortableHeader('Student', column),
-		cell: ({ row }) =>
-			h('div', { class: 'flex items-center gap-3' }, [
-				// h(Avatar, { class: 'size-8' }, () => [
-				// 	h(AvatarImage, {
-				// 		src: row.original.profile_photo || '',
-				// 		alt: row.original.name
-				// 	}),
-				// 	h(AvatarFallback, () => row.original.name.slice(0, 2).toUpperCase())
-				// ]),
-				h('div', { class: 'font-medium' }, row.original.name)
-			])
+		cell: ({ row }) => h('div', { class: 'font-medium' }, row.original.name)
+		// h('div', { class: 'flex items-center gap-3' }, [
+		// h(Avatar, { class: 'size-8' }, () => [
+		// 	h(AvatarImage, {
+		// 		src: row.original.profile_photo || '',
+		// 		alt: row.original.name
+		// 	}),
+		// 	h(AvatarFallback, () => row.original.name.slice(0, 2).toUpperCase())
+		// ]),
+		// h('div', { class: 'font-medium' }, row.original.name)
+		// ])
 	},
 	{
 		accessorKey: 'email',
