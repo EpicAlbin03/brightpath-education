@@ -7,7 +7,7 @@ import { ref } from 'vue';
 import { Field as VeeField, useForm } from 'vee-validate';
 import { toast } from 'vue-sonner';
 import { studentFormSchema, studentGradeOptions, type StudentFormSchema } from '@/lib/schemas';
-import type { Course } from '@/lib/types';
+import type { Course } from '~~/shared/types';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
