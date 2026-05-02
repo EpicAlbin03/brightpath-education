@@ -21,7 +21,7 @@ import {
 	Pencil,
 	Trash2
 } from 'lucide-vue-next';
-import { computed, defineComponent, h, ref, watch } from 'vue';
+import { computed, defineComponent, h, onMounted, ref, watch } from 'vue';
 import DeleteAlertDialog from '@/components/DeleteAlertDialog.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -52,17 +52,15 @@ import {
 } from '@/components/ui/table';
 import { valueUpdater } from '@/components/ui/table/utils';
 
-const props = defineProps<{
-	students: Student[];
-}>();
-
 const router = useRouter();
+const { students, loading, error, fetchStudents, deleteStudent } = useStudents();
 
 const pageSizes = [5, 10, 25, 50];
 const searchQuery = ref('');
 const statusFilter = ref<'all' | 'active' | 'inactive'>('all');
 const gradeFilter = ref('all');
-const studentRows = ref<Student[]>([]);
+
+const studentRows = computed(() => students.value);
 
 const gradeRanks: Record<string, number> = {
 	'A+': 12,
@@ -285,13 +283,7 @@ const columns: ColumnDef<Student>[] = [
 					onView: () => router.push(`/students/${row.original.id}`),
 					onEdit: () => router.push(`/students/${row.original.id}/edit`),
 					onDelete: async () => {
-						await $fetch(`/api/students/${row.original.id}/delete`, {
-							method: 'POST'
-						});
-
-						studentRows.value = studentRows.value.filter(
-							(student) => student.id !== row.original.id
-						);
+						await deleteStudent(row.original.id);
 					}
 				})
 			]),
@@ -375,6 +367,10 @@ function handleGradeFilterUpdate(value: unknown) {
 watch([searchQuery, statusFilter, gradeFilter], () => {
 	table.setPageIndex(0);
 });
+
+onMounted(async () => {
+	await fetchStudents();
+});
 </script>
 
 <template>
@@ -450,7 +446,21 @@ watch([searchQuery, statusFilter, gradeFilter], () => {
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					<template v-if="table.getRowModel().rows.length">
+					<template v-if="loading">
+						<TableRow>
+							<TableCell :colspan="columns.length" class="h-24 text-center text-muted-foreground">
+								Loading students...
+							</TableCell>
+						</TableRow>
+					</template>
+					<template v-else-if="error">
+						<TableRow>
+							<TableCell :colspan="columns.length" class="h-24 text-center text-destructive">
+								{{ error }}
+							</TableCell>
+						</TableRow>
+					</template>
+					<template v-else-if="table.getRowModel().rows.length">
 						<TableRow
 							v-for="row in table.getRowModel().rows"
 							:key="row.id"
@@ -461,7 +471,7 @@ watch([searchQuery, statusFilter, gradeFilter], () => {
 							</TableCell>
 						</TableRow>
 					</template>
-					<template v-else>
+					<template v-else-if="!loading && !error">
 						<TableRow>
 							<TableCell :colspan="columns.length" class="h-24 text-center text-muted-foreground">
 								No students found.

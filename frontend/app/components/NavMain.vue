@@ -31,10 +31,10 @@ function isActive(url: string) {
 					:is-active="isActive(item.url)"
 					class="hover:bg-primary/5 hover:text-primary data-[active=true]:bg-primary/5 data-[active=true]:text-primary"
 				>
-					<a :href="item.url">
+					<NuxtLink :to="item.url">
 						<component :is="item.icon" class="size-4" />
 						{{ item.title }}
-					</a>
+					</NuxtLink>
 				</SidebarMenuButton>
 			</SidebarMenuItem>
 		</SidebarMenu>

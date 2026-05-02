@@ -22,7 +22,7 @@ import {
 	Trash2,
 	Users
 } from 'lucide-vue-next';
-import { computed, defineComponent, h, ref, watch } from 'vue';
+import { computed, defineComponent, h, onMounted, ref, watch } from 'vue';
 import DeleteAlertDialog from '@/components/DeleteAlertDialog.vue';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -50,14 +50,26 @@ import {
 	TableRow
 } from '@/components/ui/table';
 import { valueUpdater } from '@/components/ui/table/utils';
-
-const props = defineProps<{
-	courses: Course[];
-}>();
+import { useCourses } from '@/composables/useCourses';
+import { useStudents } from '@/composables/useStudents';
 
 const router = useRouter();
 const searchQuery = ref('');
-const courseRows = ref<Course[]>([]);
+
+const {
+	courses,
+	loading: coursesLoading,
+	error: coursesError,
+	fetchCourses,
+	deleteCourse
+} = useCourses();
+const { students, loading: studentsLoading, error: studentsError, fetchStudents } = useStudents();
+
+const courseRows = computed(() => courses.value.map((c) => ({ ...c })));
+
+type CourseRow = Course & {
+	studentCount: number;
+};
 
 const pageSizes = [5, 10, 25, 50];
 
@@ -151,7 +163,22 @@ const RowActions = defineComponent({
 
 const sorting = ref<SortingState>([]);
 const rowSelection = ref<RowSelectionState>({});
-const data = computed<Course[]>(() => {
+
+const rawData = computed<CourseRow[]>(() => {
+	const studentCounts = (students.value ?? []).reduce<Record<number, number>>((counts, student) => {
+		for (const courseId of student.course_ids) {
+			counts[courseId] = (counts[courseId] ?? 0) + 1;
+		}
+		return counts;
+	}, {});
+
+	return courseRows.value.map((course) => ({
+		...course,
+		studentCount: studentCounts[course.id] ?? 0
+	}));
+});
+
+const data = computed<CourseRow[]>(() => {
 	const query = searchQuery.value.trim().toLowerCase();
 
 	return courseRows.value.filter((course) => {
@@ -288,6 +315,11 @@ function handlePageSizeUpdate(value: unknown) {
 
 watch(searchQuery, () => {
 	table.setPageIndex(0);
+});
+
+onMounted(async () => {
+	// Fetch both courses and students so we can compute counts
+	await Promise.all([fetchCourses(), fetchStudents()]);
 });
 </script>
 
