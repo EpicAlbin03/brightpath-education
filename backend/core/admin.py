@@ -10,7 +10,8 @@ class CourseAdmin(admin.ModelAdmin):
 
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-	list_display = ('name', 'email', 'grade', 'is_active', 'course')
-	list_filter = ('is_active', 'course')
+	list_display = ('name', 'email', 'grade', 'is_active')
+	list_filter = ('is_active',)
 	search_fields = ('name', 'email')
+	filter_horizontal = ('courses',)
 

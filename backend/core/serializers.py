@@ -133,13 +133,66 @@ class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
+    student_count = serializers.IntegerField(read_only=True)
+    
     class Meta:
         model = Course
-        fields = '__all__'
+        fields = ['id', 'name', 'code', 'description', 'student_count']
+
 
 class StudentSerializer(serializers.ModelSerializer):
-    course_detail = CourseSerializer(source='course', read_only=True)
+    # For reading: show full course details in nested format
+    # courses = CourseSerializer(many=True, read_only=True)
+    course_count = serializers.IntegerField(read_only=True)
+    
+    # For writing: accept course IDs and map them to courses field
+    # course_ids = serializers.PrimaryKeyRelatedField(
+    #     queryset=Course.objects.all(),
+    #     many=True,
+    #     write_only=True,
+    #     source='courses',
+    #     required=False
+    # )
 
     class Meta:
         model = Student
-        fields = '__all__'
+        fields = ['id', 'name', 'email', 'date_of_birth', 'grade', 'is_active', 'course_count']
+
+    def update(self, instance, validated_data):
+        """Handle ManyToMany update for courses"""
+        courses = validated_data.pop('courses', None)
+        
+        # Update regular fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        
+        # Handle many-to-many courses
+        if courses is not None:
+            instance.courses.set(courses)
+        
+        return instance
+
+
+class StudentCourseEnrollmentSerializer(serializers.Serializer):
+    """
+    Serializer for enrolling/updating student course enrollment.
+    Used for POST /students/{id}/courses/ endpoint.
+    Accepts course IDs and sets them (replaces all existing enrollments).
+    """
+    course_ids = serializers.PrimaryKeyRelatedField(
+        queryset=Course.objects.all(),
+        many=True,
+        required=True,
+        help_text="List of course IDs to enroll the student in"
+    )
+
+    def create(self, validated_data):
+        """Not used - we handle enrollment in the view"""
+        pass
+
+    def update(self, instance, validated_data):
+        """Update student's course enrollment (SET mode - replaces all)"""
+        courses = validated_data.get('course_ids', [])
+        instance.courses.set(courses)
+        return instance
