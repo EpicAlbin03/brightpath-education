@@ -16,6 +16,6 @@ export default defineEventHandler(async (event) => {
 		return students;
 	} catch (error) {
 		console.error(error instanceof Error ? error.message : error);
-		return sendError(event, createError({ statusCode: 500, message: 'Failed to fetch students.' }));
+		throw createError({ statusCode: 500, message: 'Failed to fetch students.' });
 	}
 });

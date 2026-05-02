@@ -14,9 +14,6 @@ export default defineEventHandler(async (event) => {
 		});
 	} catch (error) {
 		console.error(error instanceof Error ? error.message : error);
-		return sendError(
-			event,
-			createError({ statusCode: 500, message: `Failed to delete course ${id}` })
-		);
+		throw createError({ statusCode: 500, message: `Failed to delete course ${id}` });
 	}
 });

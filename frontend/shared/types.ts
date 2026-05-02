@@ -23,3 +23,21 @@ export type Student = {
 export type StudentIncludeCourses = Student & {
 	courses: Course[];
 };
+
+export const studentGradeOptions = [
+	'A+',
+	'A',
+	'A-',
+	'B+',
+	'B',
+	'B-',
+	'C+',
+	'C',
+	'C-',
+	'D+',
+	'D',
+	'F',
+	'N/A'
+] as const;
+
+export type StudentGrade = (typeof studentGradeOptions)[number];
