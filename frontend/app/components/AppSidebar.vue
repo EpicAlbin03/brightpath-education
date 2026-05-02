@@ -36,12 +36,6 @@ const items: Item[] = [
 	}
 ];
 
-const user = {
-	name: 'John Doe',
-	email: 'john.doe@example.com',
-	avatar: 'https://github.com/shadcn.png'
-};
-
 const { open } = useSidebar();
 </script>
 
@@ -50,10 +44,10 @@ const { open } = useSidebar();
 		<SidebarHeader>
 			<SidebarMenu>
 				<SidebarMenuItem>
-					<a href="/" class="cursor-pointer">
+					<NuxtLink to="/" class="cursor-pointer">
 						<NuxtImg src="/logo.jpg" alt="logo" class="mx-auto h-16 rounded-lg" v-if="open" />
 						<NuxtImg src="/favicon.jpg" alt="logo" class="mx-auto mt-2 h-8 rounded-lg" v-else />
-					</a>
+					</NuxtLink>
 				</SidebarMenuItem>
 			</SidebarMenu>
 		</SidebarHeader>
@@ -61,7 +55,7 @@ const { open } = useSidebar();
 			<NavMain :items="items" />
 		</SidebarContent>
 		<SidebarFooter>
-			<NavUser :user="user" />
+			<NavUser />
 		</SidebarFooter>
 		<SidebarRail />
 	</Sidebar>
