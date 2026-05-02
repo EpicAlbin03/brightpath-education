@@ -490,9 +490,9 @@ watch([searchQuery, statusFilter, gradeFilter], () => {
 					</Select>
 				</div>
 
-				<p class="text-sm text-muted-foreground">
+				<!-- <p class="text-sm text-muted-foreground">
 					{{ table.getSelectedRowModel().rows.length }} of {{ data.length }} row(s) selected.
-				</p>
+				</p> -->
 			</div>
 
 			<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end sm:gap-4">
