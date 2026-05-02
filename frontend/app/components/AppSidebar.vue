@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { SidebarProps } from '@/components/ui/sidebar';
-import { Book, Users, type LucideIcon } from 'lucide-vue-next';
+import { Book, Shield, Users, type LucideIcon } from 'lucide-vue-next';
 import NavMain from '@/components/NavMain.vue';
 import {
 	Sidebar,
@@ -13,6 +13,7 @@ import {
 	useSidebar
 } from '@/components/ui/sidebar';
 import NavUser from './NavUser.vue';
+import NavSecondary from './NavSecondary.vue';
 
 const props = defineProps<SidebarProps>();
 
@@ -22,7 +23,6 @@ type Item = {
 	icon: LucideIcon;
 };
 
-// This is sample data.
 const items: Item[] = [
 	{
 		title: 'Courses',
@@ -33,6 +33,14 @@ const items: Item[] = [
 		title: 'Students',
 		url: '/students',
 		icon: Users
+	}
+];
+
+const secondaryItems: Item[] = [
+	{
+		title: 'Privacy Policy',
+		url: '/privacy',
+		icon: Shield
 	}
 ];
 
@@ -53,6 +61,7 @@ const { open } = useSidebar();
 		</SidebarHeader>
 		<SidebarContent>
 			<NavMain :items="items" />
+			<NavSecondary :items="secondaryItems" class="mt-auto" />
 		</SidebarContent>
 		<SidebarFooter>
 			<NavUser />

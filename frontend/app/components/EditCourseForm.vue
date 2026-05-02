@@ -3,8 +3,8 @@ import { toTypedSchema } from '@vee-validate/zod';
 import { Field as VeeField, useForm } from 'vee-validate';
 import { computed } from 'vue';
 import { toast } from 'vue-sonner';
-import { courseFormSchema, type CourseFormSchema } from '@/lib/schemas';
-import type { Course, Student } from '@/lib/types';
+import { courseFormSchema, type CourseFormSchema } from '~~/shared/schemas';
+import type { CourseIncludeStudents, Student } from '~~/shared/types';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
@@ -18,7 +18,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 
 const props = defineProps<{
-	course: Course;
+	course: CourseIncludeStudents;
 	students: Student[];
 }>();
 
@@ -32,7 +32,7 @@ const initialValues = computed<CourseFormSchema>(() => ({
 	name: props.course.name,
 	code: props.course.code,
 	description: props.course.description,
-	student_ids: props.course.students?.map((student) => student.id) ?? props.course.student_ids ?? []
+	student_ids: props.course.students.map((student) => student.id)
 }));
 
 const { handleSubmit, isSubmitting, meta, resetForm } = useForm({

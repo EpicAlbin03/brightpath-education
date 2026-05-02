@@ -1,52 +1,36 @@
 <script setup lang="ts">
+import { LoaderCircle } from 'lucide-vue-next';
 import EditCourseForm from '~/components/EditCourseForm.vue';
 import PageTitle from '~/components/PageTitle.vue';
-import type { Course, Student } from '~/lib/types';
+import type { CourseIncludeStudents, Student } from '~~/shared/types';
 
 const route = useRoute();
-const config = useRuntimeConfig();
 
-const accessToken = import.meta.client ? localStorage.getItem('access_token') : null;
+const [courseResponse, studentsResponse] = await Promise.all([
+	useFetch<CourseIncludeStudents>(`/api/courses/${route.params.id}/?include=students`),
+	useFetch<Student[]>('/api/students/')
+]);
 
-const {
-	data: course,
-	pending: coursePending,
-	error: courseError
-} = await useFetch<Course>(
-	() => `${config.public.apiBase}/courses/${route.params.id}?include=students`,
-	{
-		server: false,
-		headers: {
-			Authorization: accessToken ? `Bearer ${accessToken}` : '',
-			Accept: 'application/json'
-		}
-	}
-);
-
-const {
-	data: studentsResponse,
-	pending: studentsPending,
-	error: studentsError
-} = await useFetch<Student[]>(() => `${config.public.apiBase}/students/`, {
-	server: false,
-	headers: {
-		Authorization: accessToken ? `Bearer ${accessToken}` : '',
-		Accept: 'application/json'
-	}
-});
-
-const pending = computed(() => coursePending.value || studentsPending.value);
-const error = computed(() => courseError.value || studentsError.value);
-const students = computed<Student[]>(() =>
-	(studentsResponse.value ?? []).sort((a, b) => a.id - b.id)
+const course = computed<CourseIncludeStudents | null>(() => courseResponse.data.value ?? null);
+const students = computed<Student[]>(() => studentsResponse.data.value ?? []);
+const error = computed(() => courseResponse.error.value ?? studentsResponse.error.value);
+const isLoading = computed(
+	() =>
+		courseResponse.status.value === 'idle' ||
+		studentsResponse.status.value === 'idle' ||
+		courseResponse.pending.value ||
+		studentsResponse.pending.value
 );
 </script>
 
 <template>
 	<section class="space-y-6">
 		<PageTitle title="Edit Course" />
-		<p v-if="pending" class="text-sm text-muted-foreground">Loading course...</p>
-		<p v-else-if="error" class="text-sm text-destructive">Failed to load course.</p>
+		<div v-if="isLoading" class="flex items-center gap-2 text-sm text-muted-foreground">
+			<LoaderCircle class="size-4 animate-spin" />
+			<span>Loading course data...</span>
+		</div>
+		<p v-else-if="error" class="text-sm text-destructive">Failed to load course data.</p>
 		<EditCourseForm v-else-if="course" :course="course" :students="students" />
 	</section>
 </template>

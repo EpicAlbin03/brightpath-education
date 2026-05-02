@@ -70,7 +70,7 @@ const initials = computed(() => {
 					</DropdownMenuLabel>
 					<DropdownMenuSeparator />
 					<DropdownMenuGroup>
-						<DropdownMenuItem>
+						<DropdownMenuItem @select="navigateTo('/settings')">
 							<Settings />
 							Settings
 						</DropdownMenuItem>
@@ -85,4 +85,3 @@ const initials = computed(() => {
 		</SidebarMenuItem>
 	</SidebarMenu>
 </template>
-

@@ -6,8 +6,9 @@ import type { DateValue } from 'reka-ui';
 import { ref } from 'vue';
 import { Field as VeeField, useForm } from 'vee-validate';
 import { toast } from 'vue-sonner';
-import { studentFormSchema, studentGradeOptions, type StudentFormSchema } from '@/lib/schemas';
-import type { Course } from '@/lib/types';
+import { studentFormSchema, type StudentFormSchema } from '~~/shared/schemas';
+import { studentGradeOptions } from '~~/shared/types';
+import type { Course } from '~~/shared/types';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
@@ -30,7 +31,6 @@ const emit = defineEmits<{
 	created: [payload: StudentFormSchema];
 }>();
 
-const config = useRuntimeConfig();
 const isDatePickerOpen = ref(false);
 const localTimeZone = getLocalTimeZone();
 const dateFormatter = new DateFormatter('en-US', { dateStyle: 'long' });
@@ -76,15 +76,10 @@ const { handleSubmit, isSubmitting, meta, resetForm } = useForm({
 });
 
 const onSubmit = handleSubmit(async (values) => {
-	const accessToken = localStorage.getItem('access_token');
-
 	try {
-		await $fetch(`${config.public.apiBase}/students/`, {
+		await $fetch('/api/students/', {
 			method: 'POST',
-			body: values,
-			headers: {
-				Authorization: `Bearer ${accessToken}`
-			}
+			body: values
 		});
 
 		emit('created', values);

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ColumnDef, RowSelectionState, SortingFn, SortingState } from '@tanstack/vue-table';
 import type { PropType } from 'vue';
-import type { Student } from '~/lib/types';
+import type { Student } from '~~/shared/types';
 import {
 	FlexRender,
 	getCoreRowModel,
@@ -21,12 +21,10 @@ import {
 	Pencil,
 	Trash2
 } from 'lucide-vue-next';
-import { computed, defineComponent, h, onMounted, ref, watch } from 'vue';
+import { computed, defineComponent, h, ref, watch } from 'vue';
 import DeleteAlertDialog from '@/components/DeleteAlertDialog.vue';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import {
 	DropdownMenu,
@@ -52,15 +50,18 @@ import {
 } from '@/components/ui/table';
 import { valueUpdater } from '@/components/ui/table/utils';
 
+const props = defineProps<{
+	students: Student[];
+}>();
+
 const router = useRouter();
-const { students, loading, error, fetchStudents, deleteStudent } = useStudents();
 
 const pageSizes = [5, 10, 25, 50];
 const searchQuery = ref('');
 const statusFilter = ref<'all' | 'active' | 'inactive'>('all');
 const gradeFilter = ref('all');
 
-const studentRows = computed(() => students.value);
+const studentRows = ref<Student[]>([]);
 
 const gradeRanks: Record<string, number> = {
 	'A+': 12,
@@ -226,17 +227,17 @@ const columns: ColumnDef<Student>[] = [
 	{
 		accessorKey: 'name',
 		header: ({ column }) => sortableHeader('Student', column),
-		cell: ({ row }) =>
-			h('div', { class: 'flex items-center gap-3' }, [
-				// h(Avatar, { class: 'size-8' }, () => [
-				// 	h(AvatarImage, {
-				// 		src: row.original.profile_photo || '',
-				// 		alt: row.original.name
-				// 	}),
-				// 	h(AvatarFallback, () => row.original.name.slice(0, 2).toUpperCase())
-				// ]),
-				h('div', { class: 'font-medium' }, row.original.name)
-			])
+		cell: ({ row }) => h('div', { class: 'font-medium' }, row.original.name)
+		// h('div', { class: 'flex items-center gap-3' }, [
+		// h(Avatar, { class: 'size-8' }, () => [
+		// 	h(AvatarImage, {
+		// 		src: row.original.profile_photo || '',
+		// 		alt: row.original.name
+		// 	}),
+		// 	h(AvatarFallback, () => row.original.name.slice(0, 2).toUpperCase())
+		// ]),
+		// h('div', { class: 'font-medium' }, row.original.name)
+		// ])
 	},
 	{
 		accessorKey: 'email',
@@ -283,7 +284,13 @@ const columns: ColumnDef<Student>[] = [
 					onView: () => router.push(`/students/${row.original.id}`),
 					onEdit: () => router.push(`/students/${row.original.id}/edit`),
 					onDelete: async () => {
-						await deleteStudent(row.original.id);
+						await $fetch(`/api/students/${row.original.id}/delete`, {
+							method: 'DELETE'
+						});
+
+						studentRows.value = studentRows.value.filter(
+							(student) => student.id !== row.original.id
+						);
 					}
 				})
 			]),
@@ -358,10 +365,6 @@ function handleGradeFilterUpdate(value: unknown) {
 
 watch([searchQuery, statusFilter, gradeFilter], () => {
 	table.setPageIndex(0);
-});
-
-onMounted(async () => {
-	await fetchStudents();
 });
 </script>
 
@@ -438,21 +441,7 @@ onMounted(async () => {
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					<template v-if="loading">
-						<TableRow>
-							<TableCell :colspan="columns.length" class="h-24 text-center text-muted-foreground">
-								Loading students...
-							</TableCell>
-						</TableRow>
-					</template>
-					<template v-else-if="error">
-						<TableRow>
-							<TableCell :colspan="columns.length" class="h-24 text-center text-destructive">
-								{{ error }}
-							</TableCell>
-						</TableRow>
-					</template>
-					<template v-else-if="table.getRowModel().rows.length">
+					<template v-if="table.getRowModel().rows.length">
 						<TableRow
 							v-for="row in table.getRowModel().rows"
 							:key="row.id"
@@ -463,7 +452,7 @@ onMounted(async () => {
 							</TableCell>
 						</TableRow>
 					</template>
-					<template v-else-if="!loading && !error">
+					<template v-else>
 						<TableRow>
 							<TableCell :colspan="columns.length" class="h-24 text-center text-muted-foreground">
 								No students found.
@@ -493,9 +482,9 @@ onMounted(async () => {
 					</Select>
 				</div>
 
-				<p class="text-sm text-muted-foreground">
+				<!-- <p class="text-sm text-muted-foreground">
 					{{ table.getSelectedRowModel().rows.length }} of {{ data.length }} row(s) selected.
-				</p>
+				</p> -->
 			</div>
 
 			<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end sm:gap-4">

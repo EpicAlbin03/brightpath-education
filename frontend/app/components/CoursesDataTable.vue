@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ColumnDef, RowSelectionState, SortingState } from '@tanstack/vue-table';
 import type { PropType } from 'vue';
-import type { Course } from '~/lib/types';
+import type { Course } from '~~/shared/types';
 import {
 	FlexRender,
 	getCoreRowModel,
@@ -22,10 +22,9 @@ import {
 	Trash2,
 	Users
 } from 'lucide-vue-next';
-import { computed, defineComponent, h, onMounted, ref, watch } from 'vue';
+import { computed, defineComponent, h, ref, watch } from 'vue';
 import DeleteAlertDialog from '@/components/DeleteAlertDialog.vue';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import {
 	DropdownMenu,
@@ -50,26 +49,14 @@ import {
 	TableRow
 } from '@/components/ui/table';
 import { valueUpdater } from '@/components/ui/table/utils';
-import { useCourses } from '@/composables/useCourses';
-import { useStudents } from '@/composables/useStudents';
+
+const props = defineProps<{
+	courses: Course[];
+}>();
 
 const router = useRouter();
 const searchQuery = ref('');
-
-const {
-	courses,
-	loading: coursesLoading,
-	error: coursesError,
-	fetchCourses,
-	deleteCourse
-} = useCourses();
-const { students, loading: studentsLoading, error: studentsError, fetchStudents } = useStudents();
-
 const courseRows = ref<Course[]>([]);
-
-type CourseRow = Course & {
-	studentCount: number;
-};
 
 const pageSizes = [5, 10, 25, 50];
 
@@ -164,21 +151,7 @@ const RowActions = defineComponent({
 const sorting = ref<SortingState>([]);
 const rowSelection = ref<RowSelectionState>({});
 
-const rawData = computed<CourseRow[]>(() => {
-	const studentCounts = (students.value ?? []).reduce<Record<number, number>>((counts, student) => {
-		for (const courseId of student.course_ids ?? []) {
-			counts[courseId] = (counts[courseId] ?? 0) + 1;
-		}
-		return counts;
-	}, {});
-
-	return courseRows.value.map((course) => ({
-		...course,
-		studentCount: studentCounts[course.id] ?? 0
-	}));
-});
-
-const data = computed<CourseRow[]>(() => {
+const data = computed<Course[]>(() => {
 	const query = searchQuery.value.trim().toLowerCase();
 
 	return rawData.value.filter((course) => {
@@ -257,8 +230,11 @@ const columns: ColumnDef<Course>[] = [
 					onViewStudents: () => router.push(`/courses/${row.original.id}/students`),
 					onEdit: () => router.push(`/courses/${row.original.id}/edit`),
 					onDelete: async () => {
-						await deleteCourse(row.original.id);
-						courseRows.value = courses.value.map((c) => ({ ...c }));
+						await $fetch(`/api/courses/${row.original.id}/delete`, {
+							method: 'DELETE'
+						});
+
+						courseRows.value = courseRows.value.filter((course) => course.id !== row.original.id);
 					}
 				})
 			]),
@@ -304,11 +280,6 @@ function handlePageSizeUpdate(value: unknown) {
 
 watch(searchQuery, () => {
 	table.setPageIndex(0);
-});
-
-onMounted(async () => {
-	await Promise.all([fetchCourses(), fetchStudents()]);
-	courseRows.value = courses.value.map((c) => ({ ...c }));
 });
 </script>
 
@@ -379,9 +350,9 @@ onMounted(async () => {
 					</Select>
 				</div>
 
-				<p class="text-sm text-muted-foreground">
+				<!-- <p class="text-sm text-muted-foreground">
 					{{ table.getSelectedRowModel().rows.length }} of {{ data.length }} row(s) selected.
-				</p>
+				</p> -->
 			</div>
 
 			<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end sm:gap-4">
