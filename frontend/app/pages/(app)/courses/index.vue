@@ -4,21 +4,8 @@ import CoursesDataTable from '~/components/CoursesDataTable.vue';
 import PageTitle from '~/components/PageTitle.vue';
 import type { Course } from '~/lib/types';
 
-const config = useRuntimeConfig();
-const accessToken = import.meta.client ? localStorage.getItem('access_token') : null;
-
-const {
-	data: coursesResponse,
-	pending,
-	status,
-	error
-} = await useFetch<Course[]>(() => `${config.public.apiBase}/courses/`, {
-	server: false,
-	headers: {
-		Authorization: accessToken ? `Bearer ${accessToken}` : '',
-		Accept: 'application/json'
-	}
-});
+const { data: coursesResponse, pending, status, error } = await useFetch<Course[]>('/api/courses/');
+console.log(coursesResponse);
 
 const courses = computed<Course[]>(() =>
 	(coursesResponse.value ?? [])
@@ -27,7 +14,8 @@ const courses = computed<Course[]>(() =>
 			name: course.name,
 			code: course.code,
 			description: course.description,
-			student_count: course.student_count
+			student_count: course.student_count,
+			student_ids: course.student_ids
 		}))
 		.sort((a, b) => a.id - b.id)
 );
