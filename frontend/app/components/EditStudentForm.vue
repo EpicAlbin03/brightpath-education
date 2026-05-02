@@ -6,8 +6,9 @@ import type { DateValue } from 'reka-ui';
 import { computed, ref } from 'vue';
 import { Field as VeeField, useForm } from 'vee-validate';
 import { toast } from 'vue-sonner';
-import { studentFormSchema, studentGradeOptions, type StudentFormSchema } from '~~/shared/schemas';
-import type { Course, Student } from '@/lib/types';
+import { studentFormSchema, type StudentFormSchema } from '~~/shared/schemas';
+import { studentGradeOptions } from '~~/shared/types';
+import type { Course, StudentIncludeCourses } from '~~/shared/types';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
@@ -23,7 +24,7 @@ import {
 import { cn } from '@/lib/utils';
 
 const props = defineProps<{
-	student: Student;
+	student: StudentIncludeCourses;
 	courses: Course[];
 }>();
 
@@ -42,7 +43,7 @@ const initialValues = computed<StudentFormSchema>(() => ({
 	email: props.student.email,
 	date_of_birth: props.student.date_of_birth ?? '',
 	grade: props.student.grade as StudentFormSchema['grade'],
-	course_ids: props.student.courses?.map((course) => course.id) ?? props.student.course_ids ?? []
+	course_ids: props.student.courses.map((course) => course.id)
 }));
 
 const parseStudentDate = (value: string) => {
