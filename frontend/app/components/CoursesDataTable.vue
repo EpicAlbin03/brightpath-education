@@ -22,7 +22,7 @@ import {
 	Trash2,
 	Users
 } from 'lucide-vue-next';
-import { computed, defineComponent, h, ref, watch } from 'vue';
+import { computed, defineComponent, h, onMounted, ref, watch } from 'vue';
 import DeleteAlertDialog from '@/components/DeleteAlertDialog.vue';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -50,11 +50,16 @@ import {
 	TableRow
 } from '@/components/ui/table';
 import { valueUpdater } from '@/components/ui/table/utils';
-import { courses, students } from '@/lib/temp-data';
+import { useCourses } from '@/composables/useCourses';
+import { useStudents } from '@/composables/useStudents';
 
 const router = useRouter();
 const searchQuery = ref('');
-const courseRows = ref(courses.map((course) => ({ ...course })));
+
+const { courses, loading: coursesLoading, error: coursesError, fetchCourses, deleteCourse } = useCourses();
+const { students, loading: studentsLoading, error: studentsError, fetchStudents } = useStudents();
+
+const courseRows = computed(() => courses.value.map((c) => ({ ...c })));
 
 type CourseRow = Course & {
 	studentCount: number;
@@ -154,7 +159,7 @@ const sorting = ref<SortingState>([]);
 const rowSelection = ref<RowSelectionState>({});
 
 const rawData = computed<CourseRow[]>(() => {
-	const studentCounts = students.reduce<Record<number, number>>((counts, student) => {
+	const studentCounts = (students.value ?? []).reduce<Record<number, number>>((counts, student) => {
 		for (const courseId of student.course_ids) {
 			counts[courseId] = (counts[courseId] ?? 0) + 1;
 		}
@@ -286,6 +291,11 @@ function handlePageSizeUpdate(value: unknown) {
 
 watch(searchQuery, () => {
 	table.setPageIndex(0);
+});
+
+onMounted(async () => {
+	// Fetch both courses and students so we can compute counts
+	await Promise.all([fetchCourses(), fetchStudents()]);
 });
 </script>
 
