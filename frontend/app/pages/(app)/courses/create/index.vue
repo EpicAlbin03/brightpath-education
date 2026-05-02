@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { LoaderCircle } from 'lucide-vue-next';
 import CreateCourseForm from '~/components/CreateCourseForm.vue';
 import PageTitle from '~/components/PageTitle.vue';
 import type { Student } from '~~/shared/types';
