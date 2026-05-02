@@ -108,7 +108,7 @@ onBeforeUnmount(() => {
 				</p>
 
 				<NuxtLink
-					:href="props.learnMoreHref"
+					:to="props.learnMoreHref"
 					class="text-xs text-primary underline underline-offset-4 hover:no-underline"
 				>
 					Learn more
