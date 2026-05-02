@@ -17,12 +17,8 @@ export const courseFormSchema = z.object({
 		.string()
 		.trim()
 		.min(3, 'Course code must be at least 3 characters.')
-		.max(16, 'Course code must be 16 characters or fewer.'),
-	description: z
-		.string()
-		.trim()
-		.min(10, 'Description must be at least 10 characters.')
-		.max(500, 'Description must be 500 characters or fewer.'),
+		.max(10, 'Course code must be 10 characters or fewer.'),
+	description: z.string().trim().max(255, 'Description must be 255 characters or fewer.'),
 	student_ids: z.array(z.coerce.number().int()).default([])
 });
 

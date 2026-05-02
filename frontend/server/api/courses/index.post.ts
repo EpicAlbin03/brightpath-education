@@ -1,4 +1,4 @@
-import { Course } from '~~/shared/types';
+import type { Course } from '~~/shared/types';
 import { getToken } from '../utils';
 import { courseFormSchema } from '~~/shared/schemas';
 
@@ -15,6 +15,7 @@ export default defineEventHandler(async (event) => {
 	try {
 		const course = await $fetch<Course>(`${config.public.apiBase}/courses/`, {
 			method: 'POST',
+			body: formData.data,
 			headers: {
 				Authorization: `Bearer ${token}`,
 				Accept: 'application/json'
