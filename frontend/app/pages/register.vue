@@ -5,8 +5,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-definePageMeta({ layout: 'default' })
-
 const config = useRuntimeConfig()
 
 const username = ref('')
