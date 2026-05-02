@@ -154,7 +154,7 @@ const rowSelection = ref<RowSelectionState>({});
 const data = computed<Course[]>(() => {
 	const query = searchQuery.value.trim().toLowerCase();
 
-	return courseRows.value.filter((course) => {
+	return rawData.value.filter((course) => {
 		return (
 			query.length === 0 ||
 			String(course.id).includes(query) ||
@@ -163,14 +163,6 @@ const data = computed<Course[]>(() => {
 		);
 	});
 });
-
-watch(
-	() => props.courses,
-	(courses) => {
-		courseRows.value = courses.map((course) => ({ ...course }));
-	},
-	{ immediate: true }
-);
 
 const columns: ColumnDef<Course>[] = [
 	// {
