@@ -239,7 +239,7 @@ const columns: ColumnDef<Course>[] = [
 					onEdit: () => router.push(`/courses/${row.original.id}/edit`),
 					onDelete: async () => {
 						await $fetch(`/api/courses/${row.original.id}/delete`, {
-							method: 'POST'
+							method: 'DELETE'
 						});
 
 						courseRows.value = courseRows.value.filter((course) => course.id !== row.original.id);

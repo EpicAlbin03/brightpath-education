@@ -285,7 +285,7 @@ const columns: ColumnDef<Student>[] = [
 					onEdit: () => router.push(`/students/${row.original.id}/edit`),
 					onDelete: async () => {
 						await $fetch(`/api/students/${row.original.id}/delete`, {
-							method: 'POST'
+							method: 'DELETE'
 						});
 
 						studentRows.value = studentRows.value.filter(
