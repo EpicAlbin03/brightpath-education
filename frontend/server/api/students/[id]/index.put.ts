@@ -17,7 +17,8 @@ export default defineEventHandler(async (event) => {
 		const student = await $fetch<Course>(`${config.public.apiBase}/students/${id}/`, {
 			method: 'PUT',
 			headers: {
-				Authorization: `Bearer ${token}`
+				Authorization: `Bearer ${token}`,
+				Accept: 'application/json'
 			}
 		});
 
