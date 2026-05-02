@@ -40,22 +40,14 @@ function mapBackendStudent(student: BackendStudent): Student {
 }
 
 function getAuthHeaders() {
-  if (!import.meta.client) {
-    return undefined
+  if (import.meta.client) {
+    return { Accept: 'application/json' }
   }
 
-  const accessToken = localStorage.getItem('access_token')
-  if (!accessToken) {
-    return undefined
-  }
-
-  return {
-    Authorization: `Bearer ${accessToken}`
-  }
+  return undefined
 }
 
 export function useStudents() {
-  const config = useRuntimeConfig()
   const students = useState<Student[]>('students:list', () => [])
   const loading = useState<boolean>('students:loading', () => false)
   const error = useState<string | null>('students:error', () => null)
@@ -65,7 +57,7 @@ export function useStudents() {
     error.value = null
 
     try {
-      const response = await $fetch<BackendStudent[]>(`${config.public.apiBase}/students/`, {
+      const response = await $fetch<BackendStudent[]>('/api/students/', {
         headers: getAuthHeaders()
       })
       students.value = response.map(mapBackendStudent)
@@ -83,7 +75,7 @@ export function useStudents() {
     error.value = null
 
     try {
-      const response = await $fetch<BackendStudent>(`${config.public.apiBase}/students/${id}/`, {
+      const response = await $fetch<BackendStudent>(`/api/students/${id}`, {
         headers: getAuthHeaders()
       })
       return mapBackendStudent(response)
@@ -100,7 +92,7 @@ export function useStudents() {
     error.value = null
 
     try {
-      const response = await $fetch<BackendStudent>(`${config.public.apiBase}/students/`, {
+      const response = await $fetch<BackendStudent>('/api/students/', {
         method: 'POST',
         body: payload,
         headers: getAuthHeaders()
@@ -122,7 +114,7 @@ export function useStudents() {
     error.value = null
 
     try {
-      const response = await $fetch<BackendStudent>(`${config.public.apiBase}/students/${id}/`, {
+      const response = await $fetch<BackendStudent>(`/api/students/${id}`, {
         method: 'PUT',
         body: payload,
         headers: getAuthHeaders()
@@ -144,7 +136,7 @@ export function useStudents() {
     error.value = null
 
     try {
-      await $fetch(`${config.public.apiBase}/students/${id}/`, {
+      await $fetch(`/api/students/${id}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       })
@@ -163,14 +155,11 @@ export function useStudents() {
     error.value = null
 
     try {
-      const response = await $fetch<BackendStudent>(
-        `${config.public.apiBase}/students/${studentId}/courses/`,
-        {
-          method: 'POST',
-          body: { course_ids: courseIds },
-          headers: getAuthHeaders()
-        }
-      )
+      const response = await $fetch<BackendStudent>(`/api/students/${studentId}/courses`, {
+        method: 'POST',
+        body: { course_ids: courseIds },
+        headers: getAuthHeaders()
+      })
 
       const updated = mapBackendStudent(response)
       students.value = students.value.map((student) =>
@@ -190,7 +179,7 @@ export function useStudents() {
     error.value = null
 
     try {
-      await $fetch(`${config.public.apiBase}/students/${studentId}/courses/${courseId}/`, {
+      await $fetch(`/api/students/${studentId}/courses/${courseId}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       })
