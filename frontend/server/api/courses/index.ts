@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
 			}
 		});
 
-		return courses;
+		return courses.sort((a, b) => a.id - b.id);
 	} catch (error) {
 		console.error(error instanceof Error ? error.message : error);
 		throw createError({ statusCode: 500, message: 'Failed to fetch courses.' });
