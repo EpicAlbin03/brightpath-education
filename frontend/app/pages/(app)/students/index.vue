@@ -4,37 +4,26 @@ import PageTitle from '~/components/PageTitle.vue';
 import StudentsDataTable from '~/components/StudentsDataTable.vue';
 import type { Student } from '~/lib/types';
 
-const config = useRuntimeConfig();
-const accessToken = import.meta.client ? localStorage.getItem('access_token') : null;
+const requestHeaders = import.meta.server ? useRequestHeaders(['cookie']) : undefined;
 
 const {
 	data: studentsResponse,
 	pending,
-	status,
+	refresh: refreshStudents,
 	error
-} = await useFetch<Student[]>(() => `${config.public.apiBase}/students/`, {
-	server: false,
-	headers: {
-		Authorization: accessToken ? `Bearer ${accessToken}` : '',
-		Accept: 'application/json'
-	}
+} = await useFetch<Student[]>('/api/students/', {
+	headers: requestHeaders
 });
 
 const students = computed<Student[]>(() =>
-	(studentsResponse.value ?? [])
-		.map((student) => ({
-			id: student.id,
-			name: student.name,
-			email: student.email,
-			date_of_birth: student.date_of_birth,
-			grade: student.grade,
-			is_active: student.is_active,
-			course_count: student.course_count
-		}))
-		.sort((a, b) => a.id - b.id)
+	[...(studentsResponse.value ?? [])].sort((a, b) => a.id - b.id)
 );
 
-const isLoading = computed(() => status.value === 'idle' || pending.value);
+const isLoading = computed(() => pending.value && !studentsResponse.value);
+
+async function handleRefreshStudents() {
+	await refreshStudents();
+}
 </script>
 
 <template>
@@ -46,6 +35,6 @@ const isLoading = computed(() => status.value === 'idle' || pending.value);
 			<span>Loading students...</span>
 		</div>
 		<p v-else-if="error" class="text-sm text-destructive">Failed to load students.</p>
-		<StudentsDataTable v-else :students="students" />
+		<StudentsDataTable v-else :students="students" @refresh="handleRefreshStudents" />
 	</section>
 </template>
