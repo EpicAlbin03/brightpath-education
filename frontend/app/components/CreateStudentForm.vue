@@ -6,7 +6,7 @@ import type { DateValue } from 'reka-ui';
 import { ref } from 'vue';
 import { Field as VeeField, useForm } from 'vee-validate';
 import { toast } from 'vue-sonner';
-import { studentFormSchema, studentGradeOptions, type StudentFormSchema } from '@/lib/schemas';
+import { studentFormSchema, studentGradeOptions, type StudentFormSchema } from '~~/shared/schemas';
 import type { Course } from '~~/shared/types';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';

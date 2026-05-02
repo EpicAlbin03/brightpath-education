@@ -2,7 +2,7 @@
 import { toTypedSchema } from '@vee-validate/zod';
 import { Field as VeeField, useForm } from 'vee-validate';
 import { toast } from 'vue-sonner';
-import { courseFormSchema, type CourseFormSchema } from '@/lib/schemas';
+import { courseFormSchema, type CourseFormSchema } from '~~/shared/schemas';
 import type { Student } from '~~/shared/types';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
