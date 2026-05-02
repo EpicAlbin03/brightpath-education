@@ -30,7 +30,6 @@ const emit = defineEmits<{
 	created: [payload: StudentFormSchema];
 }>();
 
-const config = useRuntimeConfig();
 const isDatePickerOpen = ref(false);
 const localTimeZone = getLocalTimeZone();
 const dateFormatter = new DateFormatter('en-US', { dateStyle: 'long' });
@@ -76,15 +75,10 @@ const { handleSubmit, isSubmitting, meta, resetForm } = useForm({
 });
 
 const onSubmit = handleSubmit(async (values) => {
-	const accessToken = localStorage.getItem('access_token');
-
 	try {
-		await $fetch(`${config.public.apiBase}/students/`, {
+		await $fetch('/api/students/', {
 			method: 'POST',
-			body: values,
-			headers: {
-				Authorization: `Bearer ${accessToken}`
-			}
+			body: values
 		});
 
 		emit('created', values);
