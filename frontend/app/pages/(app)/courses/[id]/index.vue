@@ -108,7 +108,7 @@ function getCourseInitials(name?: string) {
 					<CardDescription>{{ students.length }} student{{ students.length === 1 ? '' : 's' }} linked to this course</CardDescription>
 				</CardHeader>
 
-				<CardContent class="space-y-3">
+				<!-- <CardContent class="space-y-3">
 					<div v-if="students.length" class="grid gap-3">
 						<Card
 							v-for="student in students"
@@ -133,7 +133,7 @@ function getCourseInitials(name?: string) {
 					<div v-else class="rounded-2xl border border-dashed border-border/70 bg-muted/20 p-6 text-sm text-muted-foreground">
 						No students found for this course.
 					</div>
-				</CardContent>
+				</CardContent> -->
 			</Card>
 		</div>
 	</section>
