@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ColumnDef, RowSelectionState, SortingState } from '@tanstack/vue-table';
 import type { PropType } from 'vue';
-import type { Course } from '@/lib/types';
+import type { Course } from '~/lib/types';
 import {
 	FlexRender,
 	getCoreRowModel,
@@ -56,7 +56,13 @@ import { useStudents } from '@/composables/useStudents';
 const router = useRouter();
 const searchQuery = ref('');
 
-const { courses, loading: coursesLoading, error: coursesError, fetchCourses, deleteCourse } = useCourses();
+const {
+	courses,
+	loading: coursesLoading,
+	error: coursesError,
+	fetchCourses,
+	deleteCourse
+} = useCourses();
 const { students, loading: studentsLoading, error: studentsError, fetchStudents } = useStudents();
 
 const courseRows = computed(() => courses.value.map((c) => ({ ...c })));
@@ -175,33 +181,51 @@ const rawData = computed<CourseRow[]>(() => {
 const data = computed<CourseRow[]>(() => {
 	const query = searchQuery.value.trim().toLowerCase();
 
-	return rawData.value.filter((course) => {
+	return courseRows.value.filter((course) => {
 		return (
 			query.length === 0 ||
+			String(course.id).includes(query) ||
 			course.name.toLowerCase().includes(query) ||
 			course.code.toLowerCase().includes(query)
 		);
 	});
 });
 
-const columns: ColumnDef<CourseRow>[] = [
+watch(
+	() => props.courses,
+	(courses) => {
+		courseRows.value = courses.map((course) => ({ ...course }));
+	},
+	{ immediate: true }
+);
+
+const columns: ColumnDef<Course>[] = [
+	// {
+	// 	id: 'select',
+	// 	header: ({ table }) =>
+	// 		h('div', { class: '' }, [
+	// 			h(Checkbox, {
+	// 				modelValue: table.getIsAllPageRowsSelected(),
+	// 				'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
+	// 					table.toggleAllPageRowsSelected(value === true),
+	// 				'aria-label': 'Select all courses'
+	// 			})
+	// 		]),
+	// 	cell: ({ row }) =>
+	// 		h('div', { class: '' }, [
+	// 			h(Checkbox, {
+	// 				modelValue: row.getIsSelected(),
+	// 				'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
+	// 					row.toggleSelected(value === true),
+	// 				'aria-label': `Select ${row.original.name}`
+	// 			})
+	// 		]),
+	// 	enableSorting: false
+	// },
 	{
-		id: 'select',
-		header: ({ table }) =>
-			h(Checkbox, {
-				modelValue: table.getIsAllPageRowsSelected(),
-				'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
-					table.toggleAllPageRowsSelected(value === true),
-				'aria-label': 'Select all courses'
-			}),
-		cell: ({ row }) =>
-			h(Checkbox, {
-				modelValue: row.getIsSelected(),
-				'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
-					row.toggleSelected(value === true),
-				'aria-label': `Select ${row.original.name}`
-			}),
-		enableSorting: false
+		accessorKey: 'id',
+		header: ({ column }) => h('div', { class: 'pl-3' }, sortableHeader('ID', column)),
+		cell: ({ row }) => h('div', { class: 'pl-3 font-medium tabular-nums' }, row.original.id)
 	},
 	{
 		accessorKey: 'name',
@@ -226,9 +250,9 @@ const columns: ColumnDef<CourseRow>[] = [
 			)
 	},
 	{
-		accessorKey: 'studentCount',
+		accessorKey: 'student_count',
 		header: ({ column }) => sortableHeader('Students', column),
-		cell: ({ row }) => h('div', { class: 'font-medium' }, row.original.studentCount)
+		cell: ({ row }) => h('div', { class: 'font-medium' }, row.original.student_count)
 	},
 	{
 		id: 'actions',
@@ -305,7 +329,7 @@ onMounted(async () => {
 			<Input
 				v-model="searchQuery"
 				class="w-full sm:max-w-xs"
-				placeholder="Search by course or code..."
+				placeholder="Search by ID, course, or code..."
 			/>
 
 			<Button @click="router.push('/courses/create')">New Course</Button>

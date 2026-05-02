@@ -10,7 +10,15 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import UserProfileUpdateSerializer, UserPublicSerializer, UserRegisterSerializer, UserRoleUpdateSerializer
+from .models import Course, Student
+from .serializers import (
+    CourseSerializer,
+    StudentSerializer,
+    UserProfileUpdateSerializer,
+    UserPublicSerializer,
+    UserRegisterSerializer,
+    UserRoleUpdateSerializer,
+)
 
 
 class IsSuperUser(BasePermission):
@@ -158,3 +166,136 @@ class UserRoleUpdateView(APIView):
 
         target_user.save()
         return Response(UserPublicSerializer(target_user).data)
+
+
+class IsAdminOrSuperUser(BasePermission):
+    def has_permission(self, request, view):
+        if not request.user or not request.user.is_authenticated:
+            return False
+        if request.user.is_superuser:
+            return True
+        return request.user.groups.filter(name="admin").exists()
+
+
+class StudentListView(APIView):
+    """
+    GET  /api/students/        — all authenticated users
+    POST /api/students/        — admin and superuser only
+    """
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [IsAuthenticated(), IsAdminOrSuperUser()]
+        return [IsAuthenticated()]
+
+    def get(self, request):
+        students = Student.objects.all()
+        serializer = StudentSerializer(students, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = StudentSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class StudentDetailView(APIView):
+    """
+    GET    /api/students/{id}/  — all authenticated users
+    PATCH  /api/students/{id}/  — admin and superuser only
+    DELETE /api/students/{id}/  — admin and superuser only
+    """
+    def get_permissions(self):
+        if self.request.method in ("PATCH", "DELETE"):
+            return [IsAuthenticated(), IsAdminOrSuperUser()]
+        return [IsAuthenticated()]
+
+    def _get_student(self, pk):
+        try:
+            return Student.objects.get(pk=pk)
+        except Student.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        student = self._get_student(pk)
+        if not student:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        return Response(StudentSerializer(student).data)
+
+    def patch(self, request, pk):
+        student = self._get_student(pk)
+        if not student:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        serializer = StudentSerializer(student, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    def delete(self, request, pk):
+        student = self._get_student(pk)
+        if not student:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        student.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CourseListView(APIView):
+    """
+    GET  /api/courses/  — all authenticated users
+    POST /api/courses/  — admin and superuser only
+    """
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [IsAuthenticated(), IsAdminOrSuperUser()]
+        return [IsAuthenticated()]
+
+    def get(self, request):
+        courses = Course.objects.all()
+        serializer = CourseSerializer(courses, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = CourseSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class CourseDetailView(APIView):
+    """
+    GET    /api/courses/{id}/  — all authenticated users
+    PATCH  /api/courses/{id}/  — admin and superuser only
+    DELETE /api/courses/{id}/  — admin and superuser only
+    """
+    def get_permissions(self):
+        if self.request.method in ("PATCH", "DELETE"):
+            return [IsAuthenticated(), IsAdminOrSuperUser()]
+        return [IsAuthenticated()]
+
+    def _get_course(self, pk):
+        try:
+            return Course.objects.get(pk=pk)
+        except Course.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        course = self._get_course(pk)
+        if not course:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        return Response(CourseSerializer(course).data)
+
+    def patch(self, request, pk):
+        course = self._get_course(pk)
+        if not course:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        serializer = CourseSerializer(course, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    def delete(self, request, pk):
+        course = self._get_course(pk)
+        if not course:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        course.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ColumnDef, RowSelectionState, SortingFn, SortingState } from '@tanstack/vue-table';
 import type { PropType } from 'vue';
-import type { Student } from '@/lib/types';
+import type { Student } from '~/lib/types';
 import {
 	FlexRender,
 	getCoreRowModel,
@@ -196,36 +196,45 @@ const gradeOptions = computed(() =>
 );
 
 const columns: ColumnDef<Student>[] = [
+	// {
+	// 	id: 'select',
+	// 	header: ({ table }) =>
+	// 		h('div', { class: '' }, [
+	// 			h(Checkbox, {
+	// 				modelValue: table.getIsAllPageRowsSelected(),
+	// 				'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
+	// 					table.toggleAllPageRowsSelected(value === true),
+	// 				'aria-label': 'Select all students'
+	// 			})
+	// 		]),
+	// 	cell: ({ row }) =>
+	// 		h('div', { class: '' }, [
+	// 			h(Checkbox, {
+	// 				modelValue: row.getIsSelected(),
+	// 				'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
+	// 					row.toggleSelected(value === true),
+	// 				'aria-label': `Select ${row.original.name}`
+	// 			})
+	// 		]),
+	// 	enableSorting: false
+	// },
 	{
-		id: 'select',
-		header: ({ table }) =>
-			h(Checkbox, {
-				modelValue: table.getIsAllPageRowsSelected(),
-				'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
-					table.toggleAllPageRowsSelected(value === true),
-				'aria-label': 'Select all students'
-			}),
-		cell: ({ row }) =>
-			h(Checkbox, {
-				modelValue: row.getIsSelected(),
-				'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
-					row.toggleSelected(value === true),
-				'aria-label': `Select ${row.original.name}`
-			}),
-		enableSorting: false
+		accessorKey: 'id',
+		header: ({ column }) => h('div', { class: 'pl-3' }, sortableHeader('ID', column)),
+		cell: ({ row }) => h('div', { class: 'pl-3 font-medium tabular-nums' }, row.original.id)
 	},
 	{
 		accessorKey: 'name',
 		header: ({ column }) => sortableHeader('Student', column),
 		cell: ({ row }) =>
 			h('div', { class: 'flex items-center gap-3' }, [
-				h(Avatar, { class: 'size-8' }, () => [
-					h(AvatarImage, {
-						src: row.original.profile_photo,
-						alt: row.original.name
-					}),
-					h(AvatarFallback, () => row.original.name.slice(0, 2).toUpperCase())
-				]),
+				// h(Avatar, { class: 'size-8' }, () => [
+				// 	h(AvatarImage, {
+				// 		src: row.original.profile_photo || '',
+				// 		alt: row.original.name
+				// 	}),
+				// 	h(AvatarFallback, () => row.original.name.slice(0, 2).toUpperCase())
+				// ]),
 				h('div', { class: 'font-medium' }, row.original.name)
 			])
 	},
@@ -246,10 +255,10 @@ const columns: ColumnDef<Student>[] = [
 		cell: ({ row }) => h('div', { class: 'font-medium' }, row.original.grade)
 	},
 	{
-		id: 'courseCount',
+		id: 'course_count',
 		header: ({ column }) => sortableHeader('Courses', column),
-		accessorFn: (row) => row.course_ids.length,
-		cell: ({ row }) => h('div', { class: 'font-medium' }, row.original.course_ids.length)
+		accessorKey: 'course_count',
+		cell: ({ row }) => h('div', { class: 'font-medium' }, row.original.course_count)
 	},
 	{
 		accessorKey: 'is_active',
@@ -288,6 +297,7 @@ const data = computed(() => {
 	return studentRows.value.filter((student) => {
 		const matchesQuery =
 			query.length === 0 ||
+			String(student.id).includes(query) ||
 			student.name.toLowerCase().includes(query) ||
 			student.email.toLowerCase().includes(query);
 
@@ -301,6 +311,14 @@ const data = computed(() => {
 		return matchesQuery && matchesStatus && matchesGrade;
 	});
 });
+
+watch(
+	() => props.students,
+	(students) => {
+		studentRows.value = students.map((student) => ({ ...student }));
+	},
+	{ immediate: true }
+);
 
 const table = useVueTable({
 	get data() {
@@ -362,7 +380,7 @@ onMounted(async () => {
 				<Input
 					v-model="searchQuery"
 					class="w-full sm:max-w-xs"
-					placeholder="Search by student or email..."
+					placeholder="Search by ID, student, or email..."
 				/>
 
 				<div class="flex flex-col gap-3 sm:flex-row sm:gap-3">

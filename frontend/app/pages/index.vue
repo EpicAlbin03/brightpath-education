@@ -4,7 +4,12 @@ import { LogOut } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-definePageMeta({ middleware: 'auth', layout: 'default' })
+definePageMeta({ layout: 'app' })
+
+const router = useRouter()
+router.replace('/students')
+
+//Code under here is dead left for demonstration purposes and will be removed in the future when we add a real home page.
 
 const { user, logout, fetchMe } = useAuth()
 

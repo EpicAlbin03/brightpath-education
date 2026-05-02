@@ -17,49 +17,37 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 from .serializers import EmailTokenObtainPairSerializer
-from .api_views import (
-    StudentListCreateAPIView,
-    StudentRetrieveUpdateDestroyAPIView,
-    StudentCoursesEnrollAPIView,
-    StudentCourseUnenrollAPIView,
-    CourseListCreateAPIView,
-    CourseRetrieveUpdateDestroyAPIView,
-    CourseStudentsListAPIView
+from .views import (
+    CourseDetailView,
+    CourseListView,
+    GoogleLoginView,
+    MeView,
+    RegisterView,
+    StudentDetailView,
+    StudentListView,
+    UserRoleUpdateView,
 )
-from .views import GoogleLoginView, MeView, RegisterView
 
 
 class EmailTokenObtainPairView(TokenObtainPairView):
     serializer_class = EmailTokenObtainPairSerializer
 
 urlpatterns = [
+    # Auth
+    path("auth/register/", RegisterView.as_view(), name="auth-register"),
+    path("auth/login/", EmailTokenObtainPairView.as_view(), name="auth-login"),
+    path("auth/refresh/", TokenRefreshView.as_view(), name="auth-refresh"),
+    path("auth/me/", MeView.as_view(), name="auth-me"),
+    path("auth/google/", GoogleLoginView.as_view(), name="auth-google"),
 
-    # API auth endpoints (mirrors core.urls auth routes)
-    path('auth/register/', RegisterView.as_view(), name='api-auth-register'),
-    path('auth/login/', EmailTokenObtainPairView.as_view(), name='api-auth-login'),
-    path('auth/refresh/', TokenRefreshView.as_view(), name='api-auth-refresh'),
-    path('auth/me/', MeView.as_view(), name='api-auth-me'),
-    path('auth/google/', GoogleLoginView.as_view(), name='api-auth-google'),
+    # User management (superuser only)
+    path("users/<int:pk>/role/", UserRoleUpdateView.as_view(), name="user-role-update"),
 
-    # JWT Authentication endpoints
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    # Students
+    path("students/", StudentListView.as_view(), name="student-list"),
+    path("students/<int:pk>/", StudentDetailView.as_view(), name="student-detail"),
 
-    
-    
-
-    # API endpoints for Student model (CRUD)
-    path('students/', StudentListCreateAPIView.as_view(), name='student-list-create'),
-    path('students/<int:pk>/', StudentRetrieveUpdateDestroyAPIView.as_view(), name='student-retrieve-update-destroy'),
-
-    # NEW: Student Course Enrollment endpoints
-    path('students/<int:student_id>/courses/', StudentCoursesEnrollAPIView.as_view(), name='student-courses'),
-    path('students/<int:student_id>/courses/<int:course_id>/', StudentCourseUnenrollAPIView.as_view(), name='student-course-unenroll'),
-
-    # API endpoints for Course model (CRUD)
-    path('courses/', CourseListCreateAPIView.as_view(), name='course-list-create'),
-    path('courses/<int:pk>/', CourseRetrieveUpdateDestroyAPIView.as_view(), name='course-retrieve-update-destroy'),
-
-    # Course Students endpoint - list students in a specific course
-    path('courses/<int:pk>/students/', CourseStudentsListAPIView.as_view(), name='course-students-list'),
+    # Courses
+    path("courses/", CourseListView.as_view(), name="course-list"),
+    path("courses/<int:pk>/", CourseDetailView.as_view(), name="course-detail"),
 ]

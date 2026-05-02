@@ -19,9 +19,8 @@ let refreshTimer: ReturnType<typeof setTimeout> | null = null
 
 export function useAuth() {
   const config = useRuntimeConfig()
-  const accessToken = useState<string | null>('auth:access', () =>
-    import.meta.client ? localStorage.getItem('access_token') : null,
-  )
+  const accessTokenCookie = useCookie<string | null>('access_token', { maxAge: 60 * 60 * 24 * 7, sameSite: 'lax' })
+  const accessToken = useState<string | null>('auth:access', () => accessTokenCookie.value ?? null)
   const refreshToken = useState<string | null>('auth:refresh', () =>
     import.meta.client ? localStorage.getItem('refresh_token') : null,
   )
@@ -31,6 +30,7 @@ export function useAuth() {
 
   function setTokens(access: string, refresh: string) {
     accessToken.value = access
+    accessTokenCookie.value = access
     refreshToken.value = refresh
     if (import.meta.client) {
       localStorage.setItem('access_token', access)
@@ -40,6 +40,7 @@ export function useAuth() {
 
   function clearTokens() {
     accessToken.value = null
+    accessTokenCookie.value = null
     refreshToken.value = null
     user.value = null
     if (import.meta.client) {
@@ -88,7 +89,7 @@ export function useAuth() {
     setTokens(data.access, data.refresh)
     scheduleRefresh()
     await fetchMe()
-    await navigateTo('/')
+    await navigateTo('/students')
   }
 
   async function loginWithGoogle(idToken: string) {
@@ -99,7 +100,7 @@ export function useAuth() {
     setTokens(data.access, data.refresh)
     user.value = data.user
     scheduleRefresh()
-    await navigateTo('/')
+    await navigateTo('/students')
   }
 
   function logout() {
