@@ -9,6 +9,8 @@ definePageMeta({ layout: 'app' })
 const router = useRouter()
 router.replace('/students')
 
+//Code under here is dead left for demonstration purposes and will be removed in the future when we add a real home page.
+
 const { user, logout, fetchMe } = useAuth()
 
 onMounted(async () => {
