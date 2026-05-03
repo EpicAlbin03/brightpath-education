@@ -26,7 +26,7 @@ from .api_views import (
     CourseRetrieveUpdateDestroyAPIView,
     CourseStudentsListAPIView
 )
-from .views import GoogleLoginView, MeView, RegisterView
+from .views import GoogleLoginView, MeView, RegisterView, UserListView, UserDetailView, UserDeactivateView, UserActivateView
 
 
 class EmailTokenObtainPairView(TokenObtainPairView):
@@ -62,4 +62,10 @@ urlpatterns = [
 
     # Course Students endpoint - list students in a specific course
     path('courses/<int:pk>/students/', CourseStudentsListAPIView.as_view(), name='course-students-list'),
+
+    # User Management endpoints (superuser only)
+    path('users/', UserListView.as_view(), name='user-list'),
+    path('users/<int:pk>/', UserDetailView.as_view(), name='user-detail'),
+    path('users/<int:pk>/deactivate/', UserDeactivateView.as_view(), name='user-deactivate'),
+    path('users/<int:pk>/activate/', UserActivateView.as_view(), name='user-activate'),
 ]

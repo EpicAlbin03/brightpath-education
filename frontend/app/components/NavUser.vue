@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronsUpDown, LogOut, Settings } from 'lucide-vue-next';
+import { ChevronsUpDown, LogOut, Settings, Users } from 'lucide-vue-next';
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -73,6 +73,13 @@ const initials = computed(() => {
 						<DropdownMenuItem @select="navigateTo('/settings')">
 							<Settings />
 							Settings
+						</DropdownMenuItem>
+						<DropdownMenuItem
+							v-if="user?.role === 'superuser'"
+							@select="navigateTo('/users')"
+						>
+							<Users />
+							User Management
 						</DropdownMenuItem>
 					</DropdownMenuGroup>
 					<DropdownMenuSeparator />

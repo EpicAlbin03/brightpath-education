@@ -116,6 +116,60 @@ class UserRoleUpdateSerializer(serializers.Serializer):
     role = serializers.ChoiceField(choices=VALID_ROLES)
 
 
+class UserAdminSerializer(serializers.ModelSerializer):
+    """Full user record for superuser management views."""
+    role = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ("id", "username", "email", "role", "is_active", "date_joined")
+
+    def get_role(self, obj):
+        return get_user_role(obj)
+
+
+ADMIN_VALID_ROLES = ["viewer", "admin", "superuser"]
+
+
+class UserAdminUpdateSerializer(serializers.ModelSerializer):
+    """Allow superuser to update username and role only."""
+    role = serializers.ChoiceField(choices=ADMIN_VALID_ROLES)
+
+    class Meta:
+        model = User
+        fields = ("username", "role")
+
+    def validate_username(self, value):
+        user = self.instance
+        if User.objects.filter(username=value).exclude(pk=user.pk).exists():
+            raise serializers.ValidationError("A user with this username already exists.")
+        return value
+
+    def update(self, instance, validated_data):
+        new_role = validated_data.pop("role", None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        if new_role is not None:
+            viewer_group, _ = Group.objects.get_or_create(name="viewer")
+            admin_group, _ = Group.objects.get_or_create(name="admin")
+            if new_role == "superuser":
+                instance.groups.clear()
+                instance.is_staff = True
+                instance.is_superuser = True
+            elif new_role == "admin":
+                instance.groups.set([admin_group])
+                instance.is_staff = True
+                instance.is_superuser = False
+            else:
+                instance.groups.set([viewer_group])
+                instance.is_staff = False
+                instance.is_superuser = False
+
+        instance.save()
+        return instance
+
+
 class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
     """Accept email instead of username for login."""
 

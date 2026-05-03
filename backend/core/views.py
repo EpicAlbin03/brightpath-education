@@ -14,6 +14,8 @@ from .models import Course, Student
 from .serializers import (
     CourseSerializer,
     StudentSerializer,
+    UserAdminSerializer,
+    UserAdminUpdateSerializer,
     UserProfileUpdateSerializer,
     UserPublicSerializer,
     UserRegisterSerializer,
@@ -299,3 +301,103 @@ class CourseDetailView(APIView):
             return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         course.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# ──── User Management (superuser only) ────
+
+class UserListView(APIView):
+    """GET /api/users/ — list all users (superuser only)."""
+    permission_classes = [IsSuperUser]
+
+    def get(self, request):
+        users = User.objects.all().order_by("id")
+        return Response(UserAdminSerializer(users, many=True).data)
+
+
+class UserDetailView(APIView):
+    """GET / PATCH / DELETE /api/users/{pk}/ — superuser only."""
+    permission_classes = [IsSuperUser]
+
+    def _get_user(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        target = self._get_user(pk)
+        if not target:
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        return Response(UserAdminSerializer(target).data)
+
+    def patch(self, request, pk):
+        target = self._get_user(pk)
+        if not target:
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        if target.pk == request.user.pk:
+            return Response(
+                {"detail": "You cannot modify your own account here."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        serializer = UserAdminUpdateSerializer(target, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response(UserAdminSerializer(user).data)
+
+    def delete(self, request, pk):
+        target = self._get_user(pk)
+        if not target:
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        if target.pk == request.user.pk:
+            return Response(
+                {"detail": "You cannot delete your own account."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if target.is_superuser:
+            return Response(
+                {"detail": "Cannot delete a superuser account."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        target.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UserDeactivateView(APIView):
+    """POST /api/users/{pk}/deactivate/ — superuser only."""
+    permission_classes = [IsSuperUser]
+
+    def post(self, request, pk):
+        try:
+            target = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        if target.pk == request.user.pk:
+            return Response(
+                {"detail": "You cannot deactivate your own account."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if target.is_superuser:
+            return Response(
+                {"detail": "Cannot deactivate a superuser account."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        target.is_active = False
+        target.set_unusable_password()
+        target.save()
+        return Response(UserAdminSerializer(target).data)
+
+
+class UserActivateView(APIView):
+    """POST /api/users/{pk}/activate/ — superuser only."""
+    permission_classes = [IsSuperUser]
+
+    def post(self, request, pk):
+        try:
+            target = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        target.is_active = True
+        target.set_password("newpassword123")
+        target.save()
+        return Response(UserAdminSerializer(target).data)
+
