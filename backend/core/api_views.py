@@ -1,9 +1,11 @@
 from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Course, Student
+from .views import IsAdminOrSuperUser
 from .serializers import (
     CourseSerializer,
     StudentCourseEnrollmentSerializer,
@@ -34,7 +36,11 @@ class StudentRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView)
     """
 
     serializer_class = StudentSerializer
-    # permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.request.method in ('PUT', 'PATCH', 'DELETE'):
+            return [IsAuthenticated(), IsAdminOrSuperUser()]
+        return [IsAuthenticated()]
 
     def get_queryset(self):
         return Student.objects.annotate(course_count=Count("courses")).prefetch_related(
@@ -144,7 +150,11 @@ class CourseRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     """
 
     serializer_class = CourseSerializer
-    # permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.request.method in ('PUT', 'PATCH', 'DELETE'):
+            return [IsAuthenticated(), IsAdminOrSuperUser()]
+        return [IsAuthenticated()]
 
     def get_queryset(self):
         return Course.objects.annotate(
