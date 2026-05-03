@@ -4,6 +4,11 @@ import CoursesDataTable from '~/components/CoursesDataTable.vue';
 import PageTitle from '~/components/PageTitle.vue';
 import type { Course } from '~~/shared/types';
 
+useSeoMeta({
+	title: 'Courses | BrightPath Education',
+	description: 'Browse and manage all courses available in the BrightPath Education platform.'
+});
+
 const { data, pending, status, error } = await useFetch<Course[]>('/api/courses/');
 const courses = computed<Course[]>(() => data.value ?? []);
 const isLoading = computed(() => status.value === 'idle' || pending.value);

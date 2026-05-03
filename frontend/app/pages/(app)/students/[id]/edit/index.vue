@@ -6,6 +6,17 @@ import type { Course, StudentIncludeCourses } from '~~/shared/types';
 
 const route = useRoute();
 
+useSeoMeta({
+	title: () =>
+		student.value
+			? `Edit ${student.value.name} | BrightPath Education`
+			: 'Edit Student | BrightPath Education',
+	description: () =>
+		student.value
+			? `Update student information and course assignments for ${student.value.name}.`
+			: 'Update student records and course assignments in BrightPath Education.'
+});
+
 const [studentResponse, coursesResponse] = await Promise.all([
 	useFetch<StudentIncludeCourses>(`/api/students/${route.params.id}/?include=courses`),
 	useFetch<Course[]>('/api/courses/')

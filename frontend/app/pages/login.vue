@@ -16,6 +16,12 @@ import { Separator } from '@/components/ui/separator';
 const config = useRuntimeConfig();
 const { login, loginWithGoogle } = useAuth();
 
+useSeoMeta({
+	title: 'Sign In | BrightPath Education',
+	description:
+		'Sign in to BrightPath Education to manage students, courses, and your school administration tools.'
+});
+
 const email = ref('');
 const password = ref('');
 const loading = ref(false);

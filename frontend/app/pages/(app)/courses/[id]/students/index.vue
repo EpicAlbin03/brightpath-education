@@ -7,6 +7,17 @@ import type { CourseIncludeStudents } from '~~/shared/types';
 
 const route = useRoute();
 
+useSeoMeta({
+	title: () =>
+		course.value
+			? `${course.value.name} Students | BrightPath Education`
+			: 'Course Students | BrightPath Education',
+	description: () =>
+		course.value
+			? `Review the students currently enrolled in ${course.value.name}.`
+			: 'Review students enrolled in a selected course on BrightPath Education.'
+});
+
 const { data, pending, status, error } = await useFetch<CourseIncludeStudents>(
 	`/api/courses/${route.params.id}?include=students`
 );

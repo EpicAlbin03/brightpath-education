@@ -14,6 +14,12 @@ import { Label } from '@/components/ui/label';
 
 const config = useRuntimeConfig();
 
+useSeoMeta({
+	title: 'Create Account | BrightPath Education',
+	description:
+		'Create a BrightPath Education account to access the platform and start managing students and courses.'
+});
+
 const username = ref('');
 const email = ref('');
 const password = ref('');

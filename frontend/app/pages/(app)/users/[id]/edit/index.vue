@@ -8,6 +8,17 @@ definePageMeta({ middleware: 'superuser' });
 
 const route = useRoute();
 
+useSeoMeta({
+	title: () =>
+		user.value
+			? `Edit ${user.value.username} | BrightPath Education`
+			: 'Edit User | BrightPath Education',
+	description: () =>
+		user.value
+			? `Update account details and permissions for ${user.value.username}.`
+			: 'Update user account details and permissions in BrightPath Education.'
+});
+
 const { data, pending, status, error } = await useFetch<AppUser>(`/api/users/${route.params.id}`);
 
 const user = computed<AppUser | null>(() => data.value ?? null);

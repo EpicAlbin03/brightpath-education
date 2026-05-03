@@ -4,6 +4,12 @@ import PageTitle from '~/components/PageTitle.vue';
 import StudentsDataTable from '~/components/StudentsDataTable.vue';
 import type { Student } from '~~/shared/types';
 
+useSeoMeta({
+	title: 'Students | BrightPath Education',
+	description:
+		'Browse and manage student records, enrollment status, and related information in BrightPath Education.'
+});
+
 const { data, pending, status, error } = await useFetch<Student[]>('/api/students/');
 const students = computed<Student[]>(() => data.value ?? []);
 const isLoading = computed(() => status.value === 'idle' || pending.value);
