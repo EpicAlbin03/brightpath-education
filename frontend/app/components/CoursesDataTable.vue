@@ -331,9 +331,11 @@ watch(searchQuery, () => {
 			</Table>
 		</div>
 
-		<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-			<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-				<div class="flex items-center gap-2 text-sm font-medium text-foreground">
+		<div class="flex items-start justify-between gap-3">
+			<div class="flex min-w-0 items-center gap-4">
+				<div
+					class="flex min-w-0 flex-wrap-reverse items-center gap-x-2 gap-y-2 text-sm font-medium text-foreground"
+				>
 					<span>Rows per page</span>
 					<Select
 						:model-value="String(table.getState().pagination.pageSize)"
@@ -355,7 +357,7 @@ watch(searchQuery, () => {
 				</p> -->
 			</div>
 
-			<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end sm:gap-4">
+			<div class="flex min-w-0 flex-wrap-reverse items-center justify-end gap-x-4 gap-y-2">
 				<div class="text-sm font-medium">
 					Page {{ table.getState().pagination.pageIndex + 1 }} of {{ table.getPageCount() || 1 }}
 				</div>

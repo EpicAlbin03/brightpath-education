@@ -158,11 +158,10 @@ const RowActions = defineComponent({
 								},
 								() => [h(ShieldOff, { class: 'h-4 w-4' }), 'Deactivate']
 							)
-						: h(
-								DropdownMenuItem,
-								{ onSelect: props.onActivate },
-								() => [h(ShieldCheck, { class: 'h-4 w-4' }), 'Activate user']
-							),
+						: h(DropdownMenuItem, { onSelect: props.onActivate }, () => [
+								h(ShieldCheck, { class: 'h-4 w-4' }),
+								'Activate user'
+							]),
 					h(DropdownMenuSeparator),
 					h(
 						DropdownMenuItem,
@@ -201,9 +200,7 @@ const RowActions = defineComponent({
 
 const sorting = ref<SortingState>([]);
 
-const roleOptions = computed(() =>
-	Array.from(new Set(userRows.value.map((u) => u.role))).sort()
-);
+const roleOptions = computed(() => Array.from(new Set(userRows.value.map((u) => u.role))).sort());
 
 const columns: ColumnDef<AppUser>[] = [
 	{
@@ -235,10 +232,8 @@ const columns: ColumnDef<AppUser>[] = [
 		accessorKey: 'is_active',
 		header: 'Status',
 		cell: ({ row }) =>
-			h(
-				Badge,
-				{ variant: 'outline', class: getStatusBadgeClass(row.original.is_active) },
-				() => (row.original.is_active ? 'Active' : 'Deactivated')
+			h(Badge, { variant: 'outline', class: getStatusBadgeClass(row.original.is_active) }, () =>
+				row.original.is_active ? 'Active' : 'Deactivated'
 			)
 	},
 	{
@@ -340,152 +335,159 @@ watch([searchQuery, statusFilter, roleFilter], () => {
 					placeholder="Search by username or email..."
 				/>
 
-				<div class="flex flex-col gap-3 sm:flex-row sm:gap-3">
-					<Select :model-value="statusFilter" @update:model-value="handleStatusFilterUpdate">
-						<SelectTrigger class="w-full sm:w-40">
-							<SelectValue placeholder="Status">
-								<Badge
-									v-if="statusFilter === 'active'"
-									variant="outline"
-									:class="getStatusBadgeClass(true)"
-								>
-									Active
-								</Badge>
-								<Badge
-									v-else-if="statusFilter === 'inactive'"
-									variant="outline"
-									:class="getStatusBadgeClass(false)"
-								>
-									Deactivated
-								</Badge>
-								<span v-else>All statuses</span>
-							</SelectValue>
-						</SelectTrigger>
-						<SelectContent align="start">
-							<SelectItem value="all">All statuses</SelectItem>
-							<SelectItem value="active">
-								<Badge variant="outline" :class="getStatusBadgeClass(true)">Active</Badge>
-							</SelectItem>
-							<SelectItem value="inactive">
-								<Badge variant="outline" :class="getStatusBadgeClass(false)">Deactivated</Badge>
-							</SelectItem>
-						</SelectContent>
-					</Select>
+				<div class="flex flex-wrap gap-3">
+					<div class="min-w-32 flex-1 sm:flex-none">
+						<Select :model-value="statusFilter" @update:model-value="handleStatusFilterUpdate">
+							<SelectTrigger class="w-full sm:w-36">
+								<SelectValue placeholder="Status">
+									<Badge
+										v-if="statusFilter === 'active'"
+										variant="outline"
+										:class="getStatusBadgeClass(true)"
+									>
+										Active
+									</Badge>
+									<Badge
+										v-else-if="statusFilter === 'inactive'"
+										variant="outline"
+										:class="getStatusBadgeClass(false)"
+									>
+										Deactivated
+									</Badge>
+									<span v-else>All statuses</span>
+								</SelectValue>
+							</SelectTrigger>
+							<SelectContent align="start">
+								<SelectItem value="all">All statuses</SelectItem>
+								<SelectItem value="active">
+									<Badge variant="outline" :class="getStatusBadgeClass(true)">Active</Badge>
+								</SelectItem>
+								<SelectItem value="inactive">
+									<Badge variant="outline" :class="getStatusBadgeClass(false)">Deactivated</Badge>
+								</SelectItem>
+							</SelectContent>
+						</Select>
+					</div>
 
-					<Select :model-value="roleFilter" @update:model-value="handleRoleFilterUpdate">
-						<SelectTrigger class="w-full sm:w-36">
-							<SelectValue placeholder="Role">
-								<Badge
-									v-if="roleFilter !== 'all'"
-									variant="outline"
-									:class="getRoleBadgeClass(roleFilter as AppUser['role'])"
-								>
-									{{ roleFilter }}
-								</Badge>
-								<span v-else>All roles</span>
-							</SelectValue>
-						</SelectTrigger>
-						<SelectContent align="start">
-							<SelectItem value="all">All roles</SelectItem>
-							<SelectItem v-for="role in roleOptions" :key="role" :value="role">
-								<Badge variant="outline" :class="getRoleBadgeClass(role)">{{ role }}</Badge>
-							</SelectItem>
-						</SelectContent>
-					</Select>
+					<div class="min-w-32 flex-1 sm:flex-none">
+						<Select :model-value="roleFilter" @update:model-value="handleRoleFilterUpdate">
+							<SelectTrigger class="w-full sm:w-36">
+								<SelectValue placeholder="Role">
+									<Badge
+										v-if="roleFilter !== 'all'"
+										variant="outline"
+										:class="getRoleBadgeClass(roleFilter as AppUser['role'])"
+									>
+										{{ roleFilter }}
+									</Badge>
+									<span v-else>All roles</span>
+								</SelectValue>
+							</SelectTrigger>
+							<SelectContent align="start">
+								<SelectItem value="all">All roles</SelectItem>
+								<SelectItem v-for="role in roleOptions" :key="role" :value="role">
+									<Badge variant="outline" :class="getRoleBadgeClass(role)">{{ role }}</Badge>
+								</SelectItem>
+							</SelectContent>
+						</Select>
+					</div>
 				</div>
 			</div>
 		</div>
+	</div>
 
-		<div class="rounded-xl border bg-background">
-			<Table>
-				<TableHeader>
-					<TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
-						<TableHead v-for="header in headerGroup.headers" :key="header.id">
-							<FlexRender
-								v-if="!header.isPlaceholder"
-								:render="header.column.columnDef.header"
-								:props="header.getContext()"
-							/>
-						</TableHead>
-					</TableRow>
-				</TableHeader>
-				<TableBody>
-					<template v-if="table.getRowModel().rows.length">
-						<TableRow
-							v-for="row in table.getRowModel().rows"
-							:key="row.id"
-						>
-							<TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
-								<FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
-							</TableCell>
-						</TableRow>
-					</template>
-					<TableRow v-else>
-						<TableCell :colspan="columns.length" class="h-24 text-center text-muted-foreground">
-							No users found.
+	<div class="rounded-xl border bg-background">
+		<Table>
+			<TableHeader>
+				<TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
+					<TableHead v-for="header in headerGroup.headers" :key="header.id">
+						<FlexRender
+							v-if="!header.isPlaceholder"
+							:render="header.column.columnDef.header"
+							:props="header.getContext()"
+						/>
+					</TableHead>
+				</TableRow>
+			</TableHeader>
+			<TableBody>
+				<template v-if="table.getRowModel().rows.length">
+					<TableRow v-for="row in table.getRowModel().rows" :key="row.id">
+						<TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+							<FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
 						</TableCell>
 					</TableRow>
-				</TableBody>
-			</Table>
-		</div>
+				</template>
+				<TableRow v-else>
+					<TableCell :colspan="columns.length" class="h-24 text-center text-muted-foreground">
+						No users found.
+					</TableCell>
+				</TableRow>
+			</TableBody>
+		</Table>
+	</div>
 
-		<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-			<div class="flex items-center gap-2 text-sm text-muted-foreground">
+	<div class="flex items-start justify-between gap-3">
+		<div class="flex min-w-0 items-center gap-4">
+			<div
+				class="flex min-w-0 flex-wrap-reverse items-center gap-x-2 gap-y-2 text-sm font-medium text-foreground"
+			>
 				<span>Rows per page</span>
 				<Select
 					:model-value="String(table.getState().pagination.pageSize)"
 					@update:model-value="handlePageSizeUpdate"
 				>
-					<SelectTrigger class="h-8 w-16">
-						<SelectValue />
+					<SelectTrigger size="sm" class="w-18">
+						<SelectValue :placeholder="String(table.getState().pagination.pageSize)" />
 					</SelectTrigger>
-					<SelectContent align="start">
-						<SelectItem v-for="size in pageSizes" :key="size" :value="String(size)">
-							{{ size }}
+					<SelectContent align="end">
+						<SelectItem v-for="pageSize in pageSizes" :key="pageSize" :value="String(pageSize)">
+							{{ pageSize }}
 						</SelectItem>
 					</SelectContent>
 				</Select>
 			</div>
+		</div>
 
-			<div class="flex items-center gap-1">
-				<span class="text-sm text-muted-foreground">
-					Page {{ table.getState().pagination.pageIndex + 1 }} of
-					{{ table.getPageCount() }}
-				</span>
+		<div class="flex min-w-0 flex-wrap-reverse items-center justify-end gap-x-4 gap-y-2">
+			<div class="text-sm font-medium">
+				Page {{ table.getState().pagination.pageIndex + 1 }} of {{ table.getPageCount() || 1 }}
+			</div>
+
+			<div class="flex items-center gap-2">
 				<Button
-					variant="ghost"
+					variant="outline"
 					size="icon-sm"
-					class="h-8 w-8"
 					:disabled="!table.getCanPreviousPage()"
 					@click="table.setPageIndex(0)"
 				>
+					<span class="sr-only">First page</span>
 					<ChevronsLeft class="h-4 w-4" />
 				</Button>
 				<Button
-					variant="ghost"
+					variant="outline"
 					size="icon-sm"
-					class="h-8 w-8"
 					:disabled="!table.getCanPreviousPage()"
 					@click="table.previousPage()"
 				>
+					<span class="sr-only">Previous page</span>
 					<ChevronLeft class="h-4 w-4" />
 				</Button>
 				<Button
-					variant="ghost"
+					variant="outline"
 					size="icon-sm"
-					class="h-8 w-8"
 					:disabled="!table.getCanNextPage()"
 					@click="table.nextPage()"
 				>
+					<span class="sr-only">Next page</span>
 					<ChevronRight class="h-4 w-4" />
 				</Button>
 				<Button
-					variant="ghost"
+					variant="outline"
 					size="icon-sm"
-					class="h-8 w-8"
 					:disabled="!table.getCanNextPage()"
 					@click="table.setPageIndex(table.getPageCount() - 1)"
 				>
+					<span class="sr-only">Last page</span>
 					<ChevronsRight class="h-4 w-4" />
 				</Button>
 			</div>
