@@ -1,7 +1,21 @@
-from django.urls import path
-from rest_framework_simplejwt.views import TokenRefreshView
-from rest_framework_simplejwt.views import TokenObtainPairView
+# /auth/login - /auth/token
+# /auth/register
+# /auth/logout
+# /auth/refresh - /auth/token/refresh
 
+# /students/
+# /students/<id>/
+# /students/<id>/courses/          (NEW)
+# /students/<id>/courses/<cid>/    (NEW)
+
+# /courses/
+# /courses/<id>/
+# /courses/<id>/students/
+from django.urls import path
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 from .serializers import EmailTokenObtainPairSerializer
 from .views import (
     CourseDetailView,
@@ -17,7 +31,6 @@ from .views import (
 
 class EmailTokenObtainPairView(TokenObtainPairView):
     serializer_class = EmailTokenObtainPairSerializer
-
 
 urlpatterns = [
     # Auth
