@@ -61,7 +61,7 @@ const searchQuery = ref('');
 const statusFilter = ref<'all' | 'active' | 'inactive'>('all');
 const gradeFilter = ref('all');
 
-const studentRows = ref<Student[]>([]);
+const studentRows = ref<Student[]>(props.students);
 
 const gradeRanks: Record<string, number> = {
 	'A+': 12,

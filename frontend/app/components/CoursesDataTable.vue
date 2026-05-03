@@ -56,7 +56,7 @@ const props = defineProps<{
 
 const router = useRouter();
 const searchQuery = ref('');
-const courseRows = ref<Course[]>([]);
+const courseRows = ref<Course[]>(props.courses);
 
 const pageSizes = [5, 10, 25, 50];
 
