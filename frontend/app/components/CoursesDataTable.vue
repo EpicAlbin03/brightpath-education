@@ -56,7 +56,7 @@ const props = defineProps<{
 
 const router = useRouter();
 const searchQuery = ref('');
-const courseRows = ref<Course[]>([]);
+const courseRows = ref<Course[]>(props.courses);
 
 const pageSizes = [5, 10, 25, 50];
 
@@ -154,7 +154,7 @@ const rowSelection = ref<RowSelectionState>({});
 const data = computed<Course[]>(() => {
 	const query = searchQuery.value.trim().toLowerCase();
 
-	return rawData.value.filter((course) => {
+	return courseRows.value.filter((course) => {
 		return (
 			query.length === 0 ||
 			String(course.id).includes(query) ||

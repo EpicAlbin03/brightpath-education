@@ -61,7 +61,7 @@ const searchQuery = ref('');
 const statusFilter = ref<'all' | 'active' | 'inactive'>('all');
 const gradeFilter = ref('all');
 
-const studentRows = ref<Student[]>([]);
+const studentRows = ref<Student[]>(props.students);
 
 const gradeRanks: Record<string, number> = {
 	'A+': 12,
@@ -76,7 +76,7 @@ const gradeRanks: Record<string, number> = {
 	'D+': 3,
 	D: 2,
 	F: 1,
-	NA: 0
+	'N/A': 0
 };
 
 function getGradeRank(grade: string) {
