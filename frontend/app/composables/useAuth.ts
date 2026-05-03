@@ -110,7 +110,14 @@ export function useAuth() {
   }
 
   if (import.meta.client) {
-    onMounted(scheduleRefresh)
+    onMounted(() => {
+      // useState is initialised on the server where localStorage is unavailable,
+      // so the refresh token is always null after hydration. Re-read it here.
+      if (!refreshToken.value) {
+        refreshToken.value = localStorage.getItem('refresh_token')
+      }
+      scheduleRefresh()
+    })
   }
 
   return { user: readonly(user), isAuthenticated, login, loginWithGoogle, logout, fetchMe }
