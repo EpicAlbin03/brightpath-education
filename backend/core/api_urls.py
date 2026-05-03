@@ -16,7 +16,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from .serializers import EmailTokenObtainPairSerializer
+from .serializers import EmailTokenObtainPairSerializer, ActiveUserTokenRefreshSerializer
 from .api_views import (
     StudentListCreateAPIView,
     StudentRetrieveUpdateDestroyAPIView,
@@ -26,18 +26,22 @@ from .api_views import (
     CourseRetrieveUpdateDestroyAPIView,
     CourseStudentsListAPIView
 )
-from .views import GoogleLoginView, MeView, RegisterView
+from .views import GoogleLoginView, MeView, RegisterView, UserListView, UserDetailView, UserDeactivateView, UserActivateView
 
 
 class EmailTokenObtainPairView(TokenObtainPairView):
     serializer_class = EmailTokenObtainPairSerializer
+
+
+class ActiveUserTokenRefreshView(TokenRefreshView):
+    serializer_class = ActiveUserTokenRefreshSerializer
 
 urlpatterns = [
 
     # API auth endpoints (mirrors core.urls auth routes)
     path('auth/register/', RegisterView.as_view(), name='api-auth-register'),
     path('auth/login/', EmailTokenObtainPairView.as_view(), name='api-auth-login'),
-    path('auth/refresh/', TokenRefreshView.as_view(), name='api-auth-refresh'),
+    path('auth/refresh/', ActiveUserTokenRefreshView.as_view(), name='api-auth-refresh'),
     path('auth/me/', MeView.as_view(), name='api-auth-me'),
     path('auth/google/', GoogleLoginView.as_view(), name='api-auth-google'),
 
@@ -62,4 +66,10 @@ urlpatterns = [
 
     # Course Students endpoint - list students in a specific course
     path('courses/<int:pk>/students/', CourseStudentsListAPIView.as_view(), name='course-students-list'),
+
+    # User Management endpoints (superuser only)
+    path('users/', UserListView.as_view(), name='user-list'),
+    path('users/<int:pk>/', UserDetailView.as_view(), name='user-detail'),
+    path('users/<int:pk>/deactivate/', UserDeactivateView.as_view(), name='user-deactivate'),
+    path('users/<int:pk>/activate/', UserActivateView.as_view(), name='user-activate'),
 ]

@@ -41,3 +41,15 @@ export const studentGradeOptions = [
 ] as const;
 
 export type StudentGrade = (typeof studentGradeOptions)[number];
+
+export type AppUser = {
+	id: number;
+	username: string;
+	email: string;
+	role: 'viewer' | 'admin' | 'superuser';
+	is_active: boolean;
+	date_joined: string;
+};
+
+export const userRoleOptions = ['viewer', 'admin', 'superuser'] as const;
+export type UserRole = (typeof userRoleOptions)[number];

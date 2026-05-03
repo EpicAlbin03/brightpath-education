@@ -36,3 +36,14 @@ export const studentFormSchema = z.object({
 
 export type CourseFormSchema = z.infer<typeof courseFormSchema>;
 export type StudentFormSchema = z.infer<typeof studentFormSchema>;
+
+export const userEditSchema = z.object({
+	username: z
+		.string()
+		.trim()
+		.min(1, 'Username is required.')
+		.max(150, 'Username must be 150 characters or fewer.'),
+	role: z.enum(['viewer', 'admin', 'superuser'])
+});
+
+export type UserEditSchema = z.infer<typeof userEditSchema>;
