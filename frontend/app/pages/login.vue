@@ -81,7 +81,7 @@ function handleGoogleClick() {
 </script>
 
 <template>
-	<div class="flex min-h-screen items-center justify-center bg-background px-4">
+	<div class="flex min-h-screen items-center justify-center bg-background px-4 py-8">
 		<div class="w-full max-w-sm space-y-6">
 			<div class="space-y-1 text-center">
 				<h1 class="text-2xl font-semibold tracking-tight">BrightPath</h1>
@@ -107,7 +107,7 @@ function handleGoogleClick() {
 									v-model="email"
 									type="email"
 									placeholder="you@example.com"
-									class="pl-9"
+									class="pl-9 text-base"
 									autocomplete="email"
 									required
 								/>
@@ -125,7 +125,7 @@ function handleGoogleClick() {
 									v-model="password"
 									type="password"
 									placeholder="••••••••"
-									class="pl-9"
+									class="pl-9 text-base"
 									autocomplete="current-password"
 									required
 								/>
