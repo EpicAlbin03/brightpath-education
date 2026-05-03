@@ -39,7 +39,7 @@ const initials = computed(() => {
 				<DropdownMenuTrigger as-child>
 					<SidebarMenuButton
 						size="lg"
-						class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+						class="hover:bg-primary/5 hover:text-primary active:bg-primary/5 active:text-primary data-[state=open]:bg-primary/5 data-[state=open]:text-primary"
 					>
 						<Avatar class="h-8 w-8 rounded-lg">
 							<AvatarFallback class="rounded-lg">{{ initials }}</AvatarFallback>
@@ -74,10 +74,7 @@ const initials = computed(() => {
 							<Settings />
 							Settings
 						</DropdownMenuItem>
-						<DropdownMenuItem
-							v-if="user?.role === 'superuser'"
-							@select="navigateTo('/users')"
-						>
+						<DropdownMenuItem v-if="user?.role === 'superuser'" @select="navigateTo('/users')">
 							<Users />
 							User Management
 						</DropdownMenuItem>

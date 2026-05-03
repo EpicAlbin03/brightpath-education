@@ -16,6 +16,12 @@ const props = defineProps<{
 		icon: LucideIcon;
 	}[];
 }>();
+
+const route = useRoute();
+
+function isActive(url: string) {
+	return route.path.startsWith(url);
+}
 </script>
 
 <template>
@@ -23,7 +29,12 @@ const props = defineProps<{
 		<SidebarGroupContent>
 			<SidebarMenu>
 				<SidebarMenuItem v-for="item in items" :key="item.title">
-					<SidebarMenuButton as-child size="sm">
+					<SidebarMenuButton
+						as-child
+						size="sm"
+						:is-active="isActive(item.url)"
+						class="hover:bg-primary/5 hover:text-primary active:bg-primary/5 active:text-primary data-[active=true]:bg-primary/5 data-[active=true]:text-primary"
+					>
 						<NuxtLink :to="item.url">
 							<component :is="item.icon" />
 							<span>{{ item.title }}</span>
