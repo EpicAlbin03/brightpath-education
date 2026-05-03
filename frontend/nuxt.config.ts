@@ -19,7 +19,11 @@ export default defineNuxtConfig({
 				'clsx',
 				'tailwind-merge',
 				'class-variance-authority',
-				'reka-ui'
+				'reka-ui',
+				'@vee-validate/zod',
+				'vee-validate',
+				'zod',
+				'@tanstack/vue-table'
 			]
 		},
 		plugins: [tailwindcss()]
