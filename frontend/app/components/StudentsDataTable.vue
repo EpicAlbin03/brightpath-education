@@ -76,7 +76,7 @@ const gradeRanks: Record<string, number> = {
 	'D+': 3,
 	D: 2,
 	F: 1,
-	NA: 0
+	'N/A': 0
 };
 
 function getGradeRank(grade: string) {
