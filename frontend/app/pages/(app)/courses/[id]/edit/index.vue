@@ -6,17 +6,6 @@ import type { CourseIncludeStudents, Student } from '~~/shared/types';
 
 const route = useRoute();
 
-useSeoMeta({
-	title: () =>
-		course.value
-			? `Edit ${course.value.name} | BrightPath Education`
-			: 'Edit Course | BrightPath Education',
-	description: () =>
-		course.value
-			? `Update course details and student enrollments for ${course.value.name}.`
-			: 'Update course details and assigned students in BrightPath Education.'
-});
-
 const [courseResponse, studentsResponse] = await Promise.all([
 	useFetch<CourseIncludeStudents>(`/api/courses/${route.params.id}/?include=students`),
 	useFetch<Student[]>('/api/students/')
@@ -32,6 +21,17 @@ const isLoading = computed(
 		courseResponse.pending.value ||
 		studentsResponse.pending.value
 );
+
+useSeoMeta({
+	title: () =>
+		course.value
+			? `Edit ${course.value.name} | BrightPath Education`
+			: 'Edit Course | BrightPath Education',
+	description: () =>
+		course.value
+			? `Update course details and student enrollments for ${course.value.name}.`
+			: 'Update course details and assigned students in BrightPath Education.'
+});
 </script>
 
 <template>

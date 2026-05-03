@@ -7,6 +7,14 @@ import type { CourseIncludeStudents } from '~~/shared/types';
 
 const route = useRoute();
 
+const { data, pending, status, error } = await useFetch<CourseIncludeStudents>(
+	`/api/courses/${route.params.id}?include=students`
+);
+
+const course = computed<CourseIncludeStudents | null>(() => data.value ?? null);
+const students = computed(() => course.value?.students ?? []);
+const isLoading = computed(() => status.value === 'idle' || pending.value);
+
 useSeoMeta({
 	title: () =>
 		course.value
@@ -17,14 +25,6 @@ useSeoMeta({
 			? `Review the students currently enrolled in ${course.value.name}.`
 			: 'Review students enrolled in a selected course on BrightPath Education.'
 });
-
-const { data, pending, status, error } = await useFetch<CourseIncludeStudents>(
-	`/api/courses/${route.params.id}?include=students`
-);
-
-const course = computed<CourseIncludeStudents | null>(() => data.value ?? null);
-const students = computed(() => course.value?.students ?? []);
-const isLoading = computed(() => status.value === 'idle' || pending.value);
 
 function getStudentInitials(name?: string) {
 	if (!name) return 'S';

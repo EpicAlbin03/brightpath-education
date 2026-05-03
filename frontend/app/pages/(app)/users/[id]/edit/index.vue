@@ -8,6 +8,11 @@ definePageMeta({ middleware: 'superuser' });
 
 const route = useRoute();
 
+const { data, pending, status, error } = await useFetch<AppUser>(`/api/users/${route.params.id}`);
+
+const user = computed<AppUser | null>(() => data.value ?? null);
+const isLoading = computed(() => status.value === 'idle' || pending.value);
+
 useSeoMeta({
 	title: () =>
 		user.value
@@ -18,11 +23,6 @@ useSeoMeta({
 			? `Update account details and permissions for ${user.value.username}.`
 			: 'Update user account details and permissions in BrightPath Education.'
 });
-
-const { data, pending, status, error } = await useFetch<AppUser>(`/api/users/${route.params.id}`);
-
-const user = computed<AppUser | null>(() => data.value ?? null);
-const isLoading = computed(() => status.value === 'idle' || pending.value);
 
 function handleUpdated(updated: AppUser) {
 	data.value = updated;
