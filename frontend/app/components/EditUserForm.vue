@@ -37,12 +37,15 @@ const { handleSubmit, isSubmitting, meta, resetForm } = useForm({
 	validateOnMount: true
 });
 
+const router = useRouter();
+
 const onSubmit = handleSubmit(async (values) => {
 	try {
 		const updated = await updateUser(props.user.id, values);
 		emit('updated', updated);
 		resetForm({ values });
 		toast.success('User updated successfully.');
+		await router.push('/users');
 	} catch {
 		toast.error('Failed to update user. Please try again.');
 	}

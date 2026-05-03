@@ -36,6 +36,8 @@ const { handleSubmit, isSubmitting, meta, resetForm } = useForm({
 	initialValues
 });
 
+const router = useRouter();
+
 const onSubmit = handleSubmit(async (values) => {
 	try {
 		await $fetch('/api/courses/', {
@@ -46,6 +48,7 @@ const onSubmit = handleSubmit(async (values) => {
 		emit('created', values);
 		resetForm({ values: initialValues });
 		toast.success('Course created successfully.');
+		await router.push('/courses');
 	} catch (error) {
 		console.error(error instanceof Error ? error.message : error);
 		toast.error('Failed to create course. Please try again later.');
