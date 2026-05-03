@@ -13,6 +13,8 @@ const { data, pending, status, error } = await useFetch<CourseIncludeStudents>(
 const course = computed<CourseIncludeStudents | null>(() => data.value ?? null);
 const students = computed(() => course.value?.students ?? []);
 const isLoading = computed(() => status.value === 'idle' || pending.value);
+const { user } = useAuth();
+const isAdmin = computed(() => user.value?.role === 'admin' || user.value?.role === 'superuser');
 
 function getCourseInitials(name?: string) {
 	if (!name) return 'C';
@@ -80,7 +82,7 @@ function getCourseInitials(name?: string) {
 							</div>
 						</div>
 
-						<Button as-child variant="outline" class="w-fit">
+					<Button v-if="isAdmin" as-child variant="outline" class="w-fit">
 							<NuxtLink :to="`/courses/${course.id}/edit`">Edit course</NuxtLink>
 						</Button>
 					</div>
