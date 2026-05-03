@@ -1,39 +1,39 @@
 <script setup lang="ts">
-import { Badge } from '~/components/ui/badge'
-import { Button } from '~/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card'
-import PageTitle from '~/components/PageTitle.vue'
-import type { Course } from '~/lib/types'
+import { Button } from '~/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/components/ui/card';
+import PageTitle from '~/components/PageTitle.vue';
+import type { CourseIncludeStudents } from '~~/shared/types';
 
-const route = useRoute()
-const requestHeaders = import.meta.server ? useRequestHeaders(['cookie']) : undefined
+const route = useRoute();
 
-const { data: course, pending, error } = await useFetch<Course>(
-  () => `/api/courses/${route.params.id}?include=students`,
-  {
-    headers: requestHeaders
-  }
-)
+const { data, pending, status, error } = await useFetch<CourseIncludeStudents>(
+	`/api/courses/${route.params.id}?include=students`
+);
 
-const students = computed(() => course.value?.students ?? [])
+const course = computed<CourseIncludeStudents | null>(() => data.value ?? null);
+const students = computed(() => course.value?.students ?? []);
+const isLoading = computed(() => status.value === 'idle' || pending.value);
 
 function getCourseInitials(name?: string) {
-  if (!name) return 'C'
+	if (!name) return 'C';
 
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join('')
+	return name
+		.split(/\s+/)
+		.filter(Boolean)
+		.slice(0, 2)
+		.map((part) => part[0]?.toUpperCase())
+		.join('');
 }
 </script>
 
 <template>
 	<section class="space-y-6">
-		<PageTitle :title="course ? course.name : 'Course detail'" description="Overview, description, and enrolled students" />
+		<PageTitle
+			:title="course ? course.name : 'Course detail'"
+			description="Overview, description, and enrolled students"
+		/>
 
-		<div v-if="pending" class="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,0.9fr)]">
+		<div v-if="isLoading" class="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,0.9fr)]">
 			<Card class="min-h-64 animate-pulse">
 				<CardContent class="space-y-4 p-6">
 					<div class="h-16 w-16 rounded-full bg-muted" />
@@ -69,7 +69,9 @@ function getCourseInitials(name?: string) {
 					<div class="absolute inset-0 bg-background/90" />
 					<div class="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
 						<div class="flex items-center gap-4">
-							<div class="flex h-16 w-16 items-center justify-center rounded-2xl border border-border/60 bg-muted text-lg font-semibold text-foreground shadow-sm">
+							<div
+								class="flex h-16 w-16 items-center justify-center rounded-2xl border border-border/60 bg-muted text-lg font-semibold text-foreground shadow-sm"
+							>
 								{{ getCourseInitials(course.name) }}
 							</div>
 							<div class="space-y-1">
@@ -87,15 +89,17 @@ function getCourseInitials(name?: string) {
 				<CardContent class="p-6">
 					<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
 						<div class="rounded-2xl border border-border/60 bg-muted/35 p-4 sm:col-span-2">
-							<p class="text-xs uppercase tracking-wide text-muted-foreground">Description</p>
-							<p class="mt-2 text-sm leading-6 font-medium">{{ course.description || 'No description provided.' }}</p>
+							<p class="text-xs tracking-wide text-muted-foreground uppercase">Description</p>
+							<p class="mt-2 text-sm leading-6 font-medium">
+								{{ course.description || 'No description provided.' }}
+							</p>
 						</div>
 						<div class="rounded-2xl border border-border/60 bg-muted/35 p-4">
-							<p class="text-xs uppercase tracking-wide text-muted-foreground">Students</p>
+							<p class="text-xs tracking-wide text-muted-foreground uppercase">Students</p>
 							<p class="mt-2 text-sm font-medium">{{ students.length }}</p>
 						</div>
 						<div class="rounded-2xl border border-border/60 bg-muted/35 p-4">
-							<p class="text-xs uppercase tracking-wide text-muted-foreground">Code</p>
+							<p class="text-xs tracking-wide text-muted-foreground uppercase">Code</p>
 							<p class="mt-2 text-sm font-medium">{{ course.code }}</p>
 						</div>
 					</div>
@@ -105,7 +109,10 @@ function getCourseInitials(name?: string) {
 			<Card class="border-border/70 bg-card/90 shadow-sm backdrop-blur">
 				<CardHeader>
 					<CardTitle class="text-lg">Enrolled students</CardTitle>
-					<CardDescription>{{ students.length }} student{{ students.length === 1 ? '' : 's' }} linked to this course</CardDescription>
+					<CardDescription
+						>{{ students.length }} student{{ students.length === 1 ? '' : 's' }} linked to this
+						course</CardDescription
+					>
 				</CardHeader>
 
 				<!-- <CardContent class="space-y-3">
