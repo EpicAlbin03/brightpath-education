@@ -97,6 +97,12 @@ class GoogleLoginView(APIView):
             viewer_group, _ = Group.objects.get_or_create(name="viewer")
             user.groups.add(viewer_group)
 
+        if not user.is_active:
+            return Response(
+                {"detail": "This account has been deactivated."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         refresh = RefreshToken.for_user(user)
         return Response({
             "access": str(refresh.access_token),

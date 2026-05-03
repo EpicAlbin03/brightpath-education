@@ -1,7 +1,8 @@
 from django.contrib.auth.models import Group, User
 from django.db.models import Count
 from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.exceptions import InvalidToken
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import Course, Student
@@ -197,6 +198,23 @@ class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
             "access": str(refresh.access_token),
             "refresh": str(refresh),
         }
+
+
+class ActiveUserTokenRefreshSerializer(TokenRefreshSerializer):
+    """Extends the default refresh serializer to block deactivated users."""
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        # Decode the incoming refresh token to get the user id
+        refresh = RefreshToken(attrs["refresh"])
+        user_id = refresh["user_id"]
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            raise InvalidToken("User not found.")
+        if not user.is_active:
+            raise InvalidToken("This account has been deactivated.")
+        return data
 
 
 class CourseSerializer(serializers.ModelSerializer):

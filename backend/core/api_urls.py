@@ -16,7 +16,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from .serializers import EmailTokenObtainPairSerializer
+from .serializers import EmailTokenObtainPairSerializer, ActiveUserTokenRefreshSerializer
 from .api_views import (
     StudentListCreateAPIView,
     StudentRetrieveUpdateDestroyAPIView,
@@ -32,12 +32,16 @@ from .views import GoogleLoginView, MeView, RegisterView, UserListView, UserDeta
 class EmailTokenObtainPairView(TokenObtainPairView):
     serializer_class = EmailTokenObtainPairSerializer
 
+
+class ActiveUserTokenRefreshView(TokenRefreshView):
+    serializer_class = ActiveUserTokenRefreshSerializer
+
 urlpatterns = [
 
     # API auth endpoints (mirrors core.urls auth routes)
     path('auth/register/', RegisterView.as_view(), name='api-auth-register'),
     path('auth/login/', EmailTokenObtainPairView.as_view(), name='api-auth-login'),
-    path('auth/refresh/', TokenRefreshView.as_view(), name='api-auth-refresh'),
+    path('auth/refresh/', ActiveUserTokenRefreshView.as_view(), name='api-auth-refresh'),
     path('auth/me/', MeView.as_view(), name='api-auth-me'),
     path('auth/google/', GoogleLoginView.as_view(), name='api-auth-google'),
 
