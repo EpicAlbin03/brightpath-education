@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ColumnDef, RowSelectionState, SortingFn, SortingState } from '@tanstack/vue-table';
 import type { PropType } from 'vue';
-import type { Student } from '~/lib/types';
+import type { Student } from '~~/shared/types';
 import {
 	FlexRender,
 	getCoreRowModel,
@@ -23,10 +23,8 @@ import {
 } from 'lucide-vue-next';
 import { computed, defineComponent, h, ref, watch } from 'vue';
 import DeleteAlertDialog from '@/components/DeleteAlertDialog.vue';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import {
 	DropdownMenu,
@@ -52,22 +50,18 @@ import {
 } from '@/components/ui/table';
 import { valueUpdater } from '@/components/ui/table/utils';
 
-const router = useRouter();
-
 const props = defineProps<{
 	students: Student[];
 }>();
 
-const emit = defineEmits<{
-	refresh: [];
-}>();
+const router = useRouter();
 
 const pageSizes = [5, 10, 25, 50];
 const searchQuery = ref('');
 const statusFilter = ref<'all' | 'active' | 'inactive'>('all');
 const gradeFilter = ref('all');
 
-const studentRows = computed(() => props.students);
+const studentRows = ref<Student[]>([]);
 
 const gradeRanks: Record<string, number> = {
 	'A+': 12,
@@ -233,17 +227,17 @@ const columns: ColumnDef<Student>[] = [
 	{
 		accessorKey: 'name',
 		header: ({ column }) => sortableHeader('Student', column),
-		cell: ({ row }) =>
-			h('div', { class: 'flex items-center gap-3' }, [
-				// h(Avatar, { class: 'size-8' }, () => [
-				// 	h(AvatarImage, {
-				// 		src: row.original.profile_photo || '',
-				// 		alt: row.original.name
-				// 	}),
-				// 	h(AvatarFallback, () => row.original.name.slice(0, 2).toUpperCase())
-				// ]),
-				h('div', { class: 'font-medium' }, row.original.name)
-			])
+		cell: ({ row }) => h('div', { class: 'font-medium' }, row.original.name)
+		// h('div', { class: 'flex items-center gap-3' }, [
+		// h(Avatar, { class: 'size-8' }, () => [
+		// 	h(AvatarImage, {
+		// 		src: row.original.profile_photo || '',
+		// 		alt: row.original.name
+		// 	}),
+		// 	h(AvatarFallback, () => row.original.name.slice(0, 2).toUpperCase())
+		// ]),
+		// h('div', { class: 'font-medium' }, row.original.name)
+		// ])
 	},
 	{
 		accessorKey: 'email',
@@ -290,10 +284,13 @@ const columns: ColumnDef<Student>[] = [
 					onView: () => router.push(`/students/${row.original.id}`),
 					onEdit: () => router.push(`/students/${row.original.id}/edit`),
 					onDelete: async () => {
-						await $fetch(`/api/students/${row.original.id}`, {
+						await $fetch(`/api/students/${row.original.id}/delete`, {
 							method: 'DELETE'
 						});
-						emit('refresh');
+
+						studentRows.value = studentRows.value.filter(
+							(student) => student.id !== row.original.id
+						);
 					}
 				})
 			]),
@@ -369,7 +366,6 @@ function handleGradeFilterUpdate(value: unknown) {
 watch([searchQuery, statusFilter, gradeFilter], () => {
 	table.setPageIndex(0);
 });
-
 </script>
 
 <template>
@@ -486,9 +482,9 @@ watch([searchQuery, statusFilter, gradeFilter], () => {
 					</Select>
 				</div>
 
-				<p class="text-sm text-muted-foreground">
+				<!-- <p class="text-sm text-muted-foreground">
 					{{ table.getSelectedRowModel().rows.length }} of {{ data.length }} row(s) selected.
-				</p>
+				</p> -->
 			</div>
 
 			<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end sm:gap-4">

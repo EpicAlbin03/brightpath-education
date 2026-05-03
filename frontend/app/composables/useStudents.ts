@@ -1,4 +1,18 @@
-import type { Student } from '@/lib/types'
+import type { Course } from './useCourses'
+
+export type Student = {
+  id: number;
+  name: string;
+  profile_photo?: string;
+  email: string;
+  date_of_birth: string | null;
+  grade: string;
+  is_active: boolean;
+  course_count: number;
+  course_ids?: number[];
+  courses?: Course[];
+};
+
 
 type BackendCourse = {
   id: number

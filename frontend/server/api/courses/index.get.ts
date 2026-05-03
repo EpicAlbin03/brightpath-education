@@ -1,4 +1,4 @@
-import { Student } from '~~/shared/types';
+import { Course } from '~~/shared/types';
 import { getToken } from '../utils';
 
 export default defineEventHandler(async (event) => {
@@ -6,16 +6,16 @@ export default defineEventHandler(async (event) => {
 	const token = getToken(event);
 
 	try {
-		const students = await $fetch<Student[]>(`${config.public.apiBase}/students/`, {
+		const courses = await $fetch<Course[]>(`${config.public.apiBase}/courses/`, {
 			headers: {
 				Authorization: `Bearer ${token}`,
 				Accept: 'application/json'
 			}
 		});
 
-		return students.sort((a, b) => a.id - b.id);
+		return courses.sort((a, b) => a.id - b.id);
 	} catch (error) {
 		console.error(error instanceof Error ? error.message : error);
-		throw createError({ statusCode: 500, message: 'Failed to fetch students.' });
+		throw createError({ statusCode: 500, message: 'Failed to fetch courses.' });
 	}
 });

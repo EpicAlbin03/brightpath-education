@@ -2,28 +2,11 @@
 import { LoaderCircle } from 'lucide-vue-next';
 import PageTitle from '~/components/PageTitle.vue';
 import StudentsDataTable from '~/components/StudentsDataTable.vue';
-import type { Student } from '~/lib/types';
+import type { Student } from '~~/shared/types';
 
-const requestHeaders = import.meta.server ? useRequestHeaders(['cookie']) : undefined;
-
-const {
-	data: studentsResponse,
-	pending,
-	refresh: refreshStudents,
-	error
-} = await useFetch<Student[]>('/api/students/', {
-	headers: requestHeaders
-});
-
-const students = computed<Student[]>(() =>
-	[...(studentsResponse.value ?? [])].sort((a, b) => a.id - b.id)
-);
-
-const isLoading = computed(() => pending.value && !studentsResponse.value);
-
-async function handleRefreshStudents() {
-	await refreshStudents();
-}
+const { data, pending, status, error } = await useFetch<Student[]>('/api/students/');
+const students = computed<Student[]>(() => data.value ?? []);
+const isLoading = computed(() => status.value === 'idle' || pending.value);
 </script>
 
 <template>
@@ -35,6 +18,6 @@ async function handleRefreshStudents() {
 			<span>Loading students...</span>
 		</div>
 		<p v-else-if="error" class="text-sm text-destructive">Failed to load students.</p>
-		<StudentsDataTable v-else :students="students" @refresh="handleRefreshStudents" />
+		<StudentsDataTable v-else :students="students" />
 	</section>
 </template>

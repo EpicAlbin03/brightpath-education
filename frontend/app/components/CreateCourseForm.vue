@@ -2,8 +2,8 @@
 import { toTypedSchema } from '@vee-validate/zod';
 import { Field as VeeField, useForm } from 'vee-validate';
 import { toast } from 'vue-sonner';
-import { courseFormSchema, type CourseFormSchema } from '@/lib/schemas';
-import type { Student } from '@/lib/types';
+import { courseFormSchema, type CourseFormSchema } from '~~/shared/schemas';
+import type { Student } from '~~/shared/types';
 import { Button } from '@/components/ui/button';
 import { Field, FieldError, FieldLabel, FieldSet } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
@@ -24,8 +24,6 @@ const emit = defineEmits<{
 	created: [payload: CourseFormSchema];
 }>();
 
-const config = useRuntimeConfig();
-
 const initialValues: CourseFormSchema = {
 	name: '',
 	code: '',
@@ -39,16 +37,10 @@ const { handleSubmit, isSubmitting, meta, resetForm } = useForm({
 });
 
 const onSubmit = handleSubmit(async (values) => {
-	const accessToken = localStorage.getItem('access_token');
-
 	try {
-		await $fetch(`${config.public.apiBase}/courses/`, {
+		await $fetch('/api/courses/', {
 			method: 'POST',
-			body: values,
-			headers: {
-				Authorization: `Bearer ${accessToken}`,
-				'Content-Type': 'application/json'
-			}
+			body: values
 		});
 
 		emit('created', values);
