@@ -10,7 +10,9 @@
 
 ## Setup
 
-Make sure to install dependencies:
+> Make sure to add the `.env` file, see `.env.example`
+
+Install dependencies:
 
 ```bash
 npm install
