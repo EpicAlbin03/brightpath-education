@@ -1,4 +1,5 @@
 <script setup lang="ts">
+definePageMeta({ middleware: 'admin' });
 import { LoaderCircle } from 'lucide-vue-next';
 import EditCourseForm from '~/components/EditCourseForm.vue';
 import PageTitle from '~/components/PageTitle.vue';

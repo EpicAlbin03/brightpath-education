@@ -13,6 +13,8 @@ const { data, pending, status, error } = await useFetch<StudentIncludeCourses>(
 const student = computed<StudentIncludeCourses | null>(() => data.value ?? null);
 const courses = computed(() => student.value?.courses ?? []);
 const isLoading = computed(() => status.value === 'idle' || pending.value);
+const { user } = useAuth();
+const isAdmin = computed(() => user.value?.role === 'admin' || user.value?.role === 'superuser');
 
 useSeoMeta({
 	title: () =>
@@ -92,7 +94,7 @@ function getStudentInitials(name?: string) {
 							</div>
 						</div>
 
-						<Button as-child variant="outline" class="w-fit">
+					<Button v-if="isAdmin" as-child variant="outline" class="w-fit">
 							<NuxtLink :to="`/students/${student.id}/edit`">Edit student</NuxtLink>
 						</Button>
 					</div>

@@ -55,6 +55,8 @@ const props = defineProps<{
 }>();
 
 const router = useRouter();
+const { user } = useAuth();
+const isAdmin = computed(() => user.value?.role === 'admin' || user.value?.role === 'superuser');
 
 const pageSizes = [5, 10, 25, 50];
 const searchQuery = ref('');
@@ -135,6 +137,10 @@ const RowActions = defineComponent({
 		onDelete: {
 			type: Function as PropType<() => void>,
 			required: true
+		},
+		isAdmin: {
+			type: Boolean,
+			default: false
 		}
 	},
 	setup(props) {
@@ -157,15 +163,17 @@ const RowActions = defineComponent({
 						h(Eye, { class: 'h-4 w-4' }),
 						'View'
 					]),
-					h(DropdownMenuItem, { onSelect: props.onEdit }, () => [
-						h(Pencil, { class: 'h-4 w-4' }),
-						'Edit'
-					]),
-					h(DropdownMenuSeparator),
-					h(DropdownMenuItem, { variant: 'destructive', onSelect: handleDeleteSelect }, () => [
-						h(Trash2, { class: 'h-4 w-4' }),
-						'Delete'
-					])
+					...(props.isAdmin ? [
+						h(DropdownMenuItem, { onSelect: props.onEdit }, () => [
+							h(Pencil, { class: 'h-4 w-4' }),
+							'Edit'
+						]),
+						h(DropdownMenuSeparator),
+						h(DropdownMenuItem, { variant: 'destructive', onSelect: handleDeleteSelect }, () => [
+							h(Trash2, { class: 'h-4 w-4' }),
+							'Delete'
+						])
+					] : [])
 				]),
 				h(DeleteAlertDialog, {
 					open: isDeleteDialogOpen.value,
@@ -281,10 +289,11 @@ const columns: ColumnDef<Student>[] = [
 			h('div', { class: 'flex justify-end' }, [
 				h(RowActions, {
 					itemLabel: row.original.name,
+					isAdmin: isAdmin.value,
 					onView: () => router.push(`/students/${row.original.id}`),
 					onEdit: () => router.push(`/students/${row.original.id}/edit`),
 					onDelete: async () => {
-						await $fetch(`/api/students/${row.original.id}/delete`, {
+						await $fetch(`/api/students/${row.original.id}`, {
 							method: 'DELETE'
 						});
 
@@ -428,7 +437,7 @@ watch([searchQuery, statusFilter, gradeFilter], () => {
 				</div>
 			</div>
 
-			<Button class="sm:self-start" @click="router.push('/students/create')">New Student</Button>
+			<Button v-if="isAdmin" class="sm:self-start" @click="router.push('/students/create')">New Student</Button>
 		</div>
 
 		<div class="rounded-xl border bg-background">

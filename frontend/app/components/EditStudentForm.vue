@@ -78,6 +78,8 @@ const { handleSubmit, isSubmitting, meta, resetForm } = useForm({
 	validateOnMount: true
 });
 
+const router = useRouter();
+
 const onSubmit = handleSubmit(async (values) => {
 	const accessToken = localStorage.getItem('access_token');
 
@@ -93,6 +95,7 @@ const onSubmit = handleSubmit(async (values) => {
 		emit('updated', values);
 		resetForm({ values });
 		toast.success('Student updated successfully.');
+		await router.push('/students');
 	} catch (error) {
 		console.error(error instanceof Error ? error.message : error);
 		toast.error('Failed to update student. Please try again later.');
