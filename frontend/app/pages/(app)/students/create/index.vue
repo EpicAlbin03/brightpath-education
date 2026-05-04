@@ -4,6 +4,8 @@ import CreateStudentForm from '~/components/CreateStudentForm.vue';
 import PageTitle from '~/components/PageTitle.vue';
 import type { Course } from '~~/shared/types';
 
+definePageMeta({ middleware: 'admin' });
+
 useSeoMeta({
 	title: 'Create Student | BrightPath Education',
 	description:
