@@ -1,8 +1,9 @@
 import { Course } from '~~/shared/types';
-import { getToken, validateIdParams } from '../../utils';
+import { getToken, validateIdParams, requireAdminOrSuperuser } from '../../utils';
 import { courseFormSchema } from '~~/shared/schemas';
 
 export default defineEventHandler(async (event) => {
+	await requireAdminOrSuperuser(event);
 	const id = await validateIdParams(event);
 
 	const formData = await readValidatedBody(event, courseFormSchema.safeParse);

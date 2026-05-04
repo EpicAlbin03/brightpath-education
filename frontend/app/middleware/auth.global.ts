@@ -9,9 +9,6 @@ export default defineNuxtRouteMiddleware((to) => {
     return
   }
 
-  const publicRoutes = ['/']
-  if (publicRoutes.includes(to.path)) return
-
   if (!accessToken.value) {
     return navigateTo('/login')
   }
