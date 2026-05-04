@@ -1,6 +1,6 @@
 # Frontend
 
-## Technologies
+## Stack
 
 - JS Framework: [Nuxt](https://nuxt.com/docs/getting-started/introduction)
 - [TypeScript](https://www.typescriptlang.org)
