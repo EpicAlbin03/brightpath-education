@@ -7,7 +7,7 @@ applications:
             - npm install
             - npm run build
       artifacts:
-        baseDirectory: frontend/.output
+        baseDirectory: .amplify-hosting
         files:
           - '**/*'
       cache:
