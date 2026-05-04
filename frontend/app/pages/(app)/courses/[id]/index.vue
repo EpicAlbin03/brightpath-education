@@ -16,6 +16,17 @@ const isLoading = computed(() => status.value === 'idle' || pending.value);
 const { user } = useAuth();
 const isAdmin = computed(() => user.value?.role === 'admin' || user.value?.role === 'superuser');
 
+useSeoMeta({
+	title: () =>
+		course.value
+			? `${course.value.name} | Course Details | BrightPath Education`
+			: 'Course Details | BrightPath Education',
+	description: () =>
+		course.value
+			? `View details for ${course.value.name}, including course information and enrolled students.`
+			: 'View course details, descriptions, and enrolled students in BrightPath Education.'
+});
+
 function getCourseInitials(name?: string) {
 	if (!name) return 'C';
 
@@ -117,7 +128,7 @@ function getCourseInitials(name?: string) {
 					>
 				</CardHeader>
 
-				<!-- <CardContent class="space-y-3">
+				<CardContent class="space-y-3">
 					<div v-if="students.length" class="grid gap-3">
 						<Card
 							v-for="student in students"
@@ -142,7 +153,7 @@ function getCourseInitials(name?: string) {
 					<div v-else class="rounded-2xl border border-dashed border-border/70 bg-muted/20 p-6 text-sm text-muted-foreground">
 						No students found for this course.
 					</div>
-				</CardContent> -->
+				</CardContent>
 			</Card>
 		</div>
 	</section>

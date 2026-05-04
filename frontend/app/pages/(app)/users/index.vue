@@ -7,6 +7,12 @@ import type { AppUser } from '~~/shared/types';
 
 definePageMeta({ middleware: 'superuser' });
 
+useSeoMeta({
+	title: 'User Management | BrightPath Education',
+	description:
+		'Manage platform users, account access, and administrative permissions in BrightPath Education.'
+});
+
 const { data, pending, status, error, refresh } = await useFetch<AppUser[]>('/api/users/');
 const users = computed<AppUser[]>(() => data.value ?? []);
 const isLoading = computed(() => status.value === 'idle' || pending.value);

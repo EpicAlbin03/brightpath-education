@@ -4,6 +4,13 @@ import CreateCourseForm from '~/components/CreateCourseForm.vue';
 import PageTitle from '~/components/PageTitle.vue';
 import type { Student } from '~~/shared/types';
 
+definePageMeta({ middleware: 'admin' });
+
+useSeoMeta({
+	title: 'Create Course | BrightPath Education',
+	description: 'Add a new course in BrightPath Education and assign enrolled students during setup.'
+});
+
 const { data, pending, status, error } = await useFetch<Student[]>('/api/students/');
 const students = computed<Student[]>(() => data.value ?? []);
 const isLoading = computed(() => status.value === 'idle' || pending.value);

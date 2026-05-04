@@ -56,7 +56,7 @@ const breadcrumbSegments = computed(() => {
 				</Breadcrumb>
 				<ModeToggle class="ml-auto" />
 			</header>
-			<div class="flex flex-1 flex-col gap-6 p-6">
+			<div class="flex min-w-0 flex-1 flex-col gap-6 p-6">
 				<slot />
 			</div>
 		</SidebarInset>

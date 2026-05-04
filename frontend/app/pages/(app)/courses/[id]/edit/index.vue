@@ -1,9 +1,10 @@
 <script setup lang="ts">
-definePageMeta({ middleware: 'admin' });
 import { LoaderCircle } from 'lucide-vue-next';
 import EditCourseForm from '~/components/EditCourseForm.vue';
 import PageTitle from '~/components/PageTitle.vue';
 import type { CourseIncludeStudents, Student } from '~~/shared/types';
+
+definePageMeta({ middleware: 'admin' });
 
 const route = useRoute();
 
@@ -22,6 +23,17 @@ const isLoading = computed(
 		courseResponse.pending.value ||
 		studentsResponse.pending.value
 );
+
+useSeoMeta({
+	title: () =>
+		course.value
+			? `Edit ${course.value.name} | BrightPath Education`
+			: 'Edit Course | BrightPath Education',
+	description: () =>
+		course.value
+			? `Update course details and student enrollments for ${course.value.name}.`
+			: 'Update course details and assigned students in BrightPath Education.'
+});
 </script>
 
 <template>

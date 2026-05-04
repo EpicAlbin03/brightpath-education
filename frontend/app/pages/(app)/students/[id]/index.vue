@@ -16,6 +16,17 @@ const isLoading = computed(() => status.value === 'idle' || pending.value);
 const { user } = useAuth();
 const isAdmin = computed(() => user.value?.role === 'admin' || user.value?.role === 'superuser');
 
+useSeoMeta({
+	title: () =>
+		student.value
+			? `${student.value.name} | Student Details | BrightPath Education`
+			: 'Student Details | BrightPath Education',
+	description: () =>
+		student.value
+			? `View ${student.value.name}'s profile, enrollment status, and assigned courses.`
+			: 'View student profiles, status, and course enrollment details in BrightPath Education.'
+});
+
 function getStudentInitials(name?: string) {
 	if (!name) return 'S';
 	return name

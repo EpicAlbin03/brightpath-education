@@ -19,8 +19,7 @@ import {
 	Eye,
 	MoreHorizontal,
 	Pencil,
-	Trash2,
-	Users
+	Trash2
 } from 'lucide-vue-next';
 import { computed, defineComponent, h, ref, watch } from 'vue';
 import DeleteAlertDialog from '@/components/DeleteAlertDialog.vue';
@@ -89,10 +88,6 @@ const RowActions = defineComponent({
 			type: Function as PropType<() => void>,
 			required: true
 		},
-		onViewStudents: {
-			type: Function as PropType<() => void>,
-			required: true
-		},
 		onEdit: {
 			type: Function as PropType<() => void>,
 			required: true
@@ -126,21 +121,20 @@ const RowActions = defineComponent({
 						h(Eye, { class: 'h-4 w-4' }),
 						'View'
 					]),
-					h(DropdownMenuItem, { onSelect: props.onViewStudents }, () => [
-						h(Users, { class: 'h-4 w-4' }),
-						'Students'
-					]),
-					...(props.isAdmin ? [
-						h(DropdownMenuItem, { onSelect: props.onEdit }, () => [
-							h(Pencil, { class: 'h-4 w-4' }),
-							'Edit'
-						]),
-						h(DropdownMenuSeparator),
-						h(DropdownMenuItem, { variant: 'destructive', onSelect: handleDeleteSelect }, () => [
-							h(Trash2, { class: 'h-4 w-4' }),
-							'Delete'
-						])
-					] : [])
+					...(props.isAdmin
+						? [
+								h(DropdownMenuItem, { onSelect: props.onEdit }, () => [
+									h(Pencil, { class: 'h-4 w-4' }),
+									'Edit'
+								]),
+								h(DropdownMenuSeparator),
+								h(
+									DropdownMenuItem,
+									{ variant: 'destructive', onSelect: handleDeleteSelect },
+									() => [h(Trash2, { class: 'h-4 w-4' }), 'Delete']
+								)
+							]
+						: [])
 				]),
 				h(DeleteAlertDialog, {
 					open: isDeleteDialogOpen.value,
@@ -236,10 +230,9 @@ const columns: ColumnDef<Course>[] = [
 					itemLabel: row.original.name,
 					isAdmin: isAdmin.value,
 					onView: () => router.push(`/courses/${row.original.id}`),
-					onViewStudents: () => router.push(`/courses/${row.original.id}/students`),
 					onEdit: () => router.push(`/courses/${row.original.id}/edit`),
 					onDelete: async () => {
-						await $fetch(`/api/courses/${row.original.id}/delete`, {
+						await $fetch(`/api/courses/${row.original.id}`, {
 							method: 'DELETE'
 						});
 
@@ -340,9 +333,11 @@ watch(searchQuery, () => {
 			</Table>
 		</div>
 
-		<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-			<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-				<div class="flex items-center gap-2 text-sm font-medium text-foreground">
+		<div class="flex items-start justify-between gap-3">
+			<div class="flex min-w-0 items-center gap-4">
+				<div
+					class="flex min-w-0 flex-wrap-reverse items-center gap-x-2 gap-y-2 text-sm font-medium text-foreground"
+				>
 					<span>Rows per page</span>
 					<Select
 						:model-value="String(table.getState().pagination.pageSize)"
@@ -364,7 +359,7 @@ watch(searchQuery, () => {
 				</p> -->
 			</div>
 
-			<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end sm:gap-4">
+			<div class="flex min-w-0 flex-wrap-reverse items-center justify-end gap-x-4 gap-y-2">
 				<div class="text-sm font-medium">
 					Page {{ table.getState().pagination.pageIndex + 1 }} of {{ table.getPageCount() || 1 }}
 				</div>
