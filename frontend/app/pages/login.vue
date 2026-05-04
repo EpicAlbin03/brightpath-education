@@ -16,6 +16,12 @@ import { Separator } from '@/components/ui/separator';
 const config = useRuntimeConfig();
 const { login, loginWithGoogle } = useAuth();
 
+useSeoMeta({
+	title: 'Sign In | BrightPath Education',
+	description:
+		'Sign in to BrightPath Education to manage students, courses, and your school administration tools.'
+});
+
 const email = ref('');
 const password = ref('');
 const loading = ref(false);
@@ -81,12 +87,13 @@ function handleGoogleClick() {
 </script>
 
 <template>
-	<div class="flex min-h-screen items-center justify-center bg-background px-4 py-8">
-		<div class="w-full max-w-sm space-y-6">
-			<div class="space-y-1 text-center">
-				<h1 class="text-2xl font-semibold tracking-tight">BrightPath</h1>
-				<p class="text-sm text-muted-foreground">Education platform</p>
-			</div>
+	<div class="flex min-h-screen items-center justify-center bg-background px-4 py-24">
+		<div class="relative w-full max-w-sm">
+			<NuxtImg
+				src="/logo.jpg"
+				alt="logo"
+				class="absolute bottom-full left-1/2 mb-8 -translate-x-1/2 rounded-lg"
+			/>
 
 			<Card>
 				<CardHeader class="space-y-1 pb-4">

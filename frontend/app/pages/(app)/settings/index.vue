@@ -6,6 +6,11 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCookieConsent } from '~/composables/useCookieConsent';
 
+useSeoMeta({
+	title: 'Settings | BrightPath Education',
+	description: 'Manage BrightPath Education account preferences and application settings.'
+});
+
 const { cookieConsent, setCookieConsent } = useCookieConsent();
 
 function handleCookieConsentChange(value: boolean | 'indeterminate') {

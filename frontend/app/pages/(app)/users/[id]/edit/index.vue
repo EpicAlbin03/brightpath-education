@@ -13,6 +13,17 @@ const { data, pending, status, error } = await useFetch<AppUser>(`/api/users/${r
 const user = computed<AppUser | null>(() => data.value ?? null);
 const isLoading = computed(() => status.value === 'idle' || pending.value);
 
+useSeoMeta({
+	title: () =>
+		user.value
+			? `Edit ${user.value.username} | BrightPath Education`
+			: 'Edit User | BrightPath Education',
+	description: () =>
+		user.value
+			? `Update account details and permissions for ${user.value.username}.`
+			: 'Update user account details and permissions in BrightPath Education.'
+});
+
 function handleUpdated(updated: AppUser) {
 	data.value = updated;
 }

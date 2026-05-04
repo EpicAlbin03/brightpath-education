@@ -22,6 +22,17 @@ const isLoading = computed(
 		studentResponse.pending.value ||
 		coursesResponse.pending.value
 );
+
+useSeoMeta({
+	title: () =>
+		student.value
+			? `Edit ${student.value.name} | BrightPath Education`
+			: 'Edit Student | BrightPath Education',
+	description: () =>
+		student.value
+			? `Update student information and course assignments for ${student.value.name}.`
+			: 'Update student records and course assignments in BrightPath Education.'
+});
 </script>
 
 <template>

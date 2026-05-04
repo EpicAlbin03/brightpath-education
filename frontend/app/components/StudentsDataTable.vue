@@ -387,49 +387,53 @@ watch([searchQuery, statusFilter, gradeFilter], () => {
 					placeholder="Search by ID, student, or email..."
 				/>
 
-				<div class="flex flex-col gap-3 sm:flex-row sm:gap-3">
-					<Select :model-value="statusFilter" @update:model-value="handleStatusFilterUpdate">
-						<SelectTrigger class="w-full sm:w-36">
-							<SelectValue placeholder="Status">
-								<Badge
-									v-if="statusFilter === 'active'"
-									variant="outline"
-									:class="getStatusBadgeClass(true)"
-								>
-									Active
-								</Badge>
-								<Badge
-									v-else-if="statusFilter === 'inactive'"
-									variant="outline"
-									:class="getStatusBadgeClass(false)"
-								>
-									Inactive
-								</Badge>
-								<span v-else>All statuses</span>
-							</SelectValue>
-						</SelectTrigger>
-						<SelectContent align="start">
-							<SelectItem value="all">All statuses</SelectItem>
-							<SelectItem value="active">
-								<Badge variant="outline" :class="getStatusBadgeClass(true)">Active</Badge>
-							</SelectItem>
-							<SelectItem value="inactive">
-								<Badge variant="outline" :class="getStatusBadgeClass(false)">Inactive</Badge>
-							</SelectItem>
-						</SelectContent>
-					</Select>
+				<div class="flex flex-wrap gap-3">
+					<div class="min-w-32 flex-1 sm:flex-none">
+						<Select :model-value="statusFilter" @update:model-value="handleStatusFilterUpdate">
+							<SelectTrigger class="w-full sm:w-36">
+								<SelectValue placeholder="Status">
+									<Badge
+										v-if="statusFilter === 'active'"
+										variant="outline"
+										:class="getStatusBadgeClass(true)"
+									>
+										Active
+									</Badge>
+									<Badge
+										v-else-if="statusFilter === 'inactive'"
+										variant="outline"
+										:class="getStatusBadgeClass(false)"
+									>
+										Inactive
+									</Badge>
+									<span v-else>All statuses</span>
+								</SelectValue>
+							</SelectTrigger>
+							<SelectContent align="start">
+								<SelectItem value="all">All statuses</SelectItem>
+								<SelectItem value="active">
+									<Badge variant="outline" :class="getStatusBadgeClass(true)">Active</Badge>
+								</SelectItem>
+								<SelectItem value="inactive">
+									<Badge variant="outline" :class="getStatusBadgeClass(false)">Inactive</Badge>
+								</SelectItem>
+							</SelectContent>
+						</Select>
+					</div>
 
-					<Select :model-value="gradeFilter" @update:model-value="handleGradeFilterUpdate">
-						<SelectTrigger class="w-full sm:w-36">
-							<SelectValue placeholder="Grade" />
-						</SelectTrigger>
-						<SelectContent align="start">
-							<SelectItem value="all">All grades</SelectItem>
-							<SelectItem v-for="grade in gradeOptions" :key="grade" :value="grade">
-								{{ grade }}
-							</SelectItem>
-						</SelectContent>
-					</Select>
+					<div class="min-w-32 flex-1 sm:flex-none">
+						<Select :model-value="gradeFilter" @update:model-value="handleGradeFilterUpdate">
+							<SelectTrigger class="w-full sm:w-36">
+								<SelectValue placeholder="Grade" />
+							</SelectTrigger>
+							<SelectContent align="start">
+								<SelectItem value="all">All grades</SelectItem>
+								<SelectItem v-for="grade in gradeOptions" :key="grade" :value="grade">
+									{{ grade }}
+								</SelectItem>
+							</SelectContent>
+						</Select>
+					</div>
 				</div>
 			</div>
 
@@ -472,9 +476,11 @@ watch([searchQuery, statusFilter, gradeFilter], () => {
 			</Table>
 		</div>
 
-		<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-			<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-				<div class="flex items-center gap-2 text-sm font-medium text-foreground">
+		<div class="flex items-start justify-between gap-3">
+			<div class="flex min-w-0 items-center gap-4">
+				<div
+					class="flex min-w-0 flex-wrap-reverse items-center gap-x-2 gap-y-2 text-sm font-medium text-foreground"
+				>
 					<span>Rows per page</span>
 					<Select
 						:model-value="String(table.getState().pagination.pageSize)"
@@ -496,7 +502,7 @@ watch([searchQuery, statusFilter, gradeFilter], () => {
 				</p> -->
 			</div>
 
-			<div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end sm:gap-4">
+			<div class="flex min-w-0 flex-wrap-reverse items-center justify-end gap-x-4 gap-y-2">
 				<div class="text-sm font-medium">
 					Page {{ table.getState().pagination.pageIndex + 1 }} of {{ table.getPageCount() || 1 }}
 				</div>
