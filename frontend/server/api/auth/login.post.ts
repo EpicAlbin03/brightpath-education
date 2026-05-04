@@ -8,7 +8,15 @@ export default defineEventHandler(async (event) => {
 			body,
 			headers: { Accept: 'application/json' }
 		});
-		return data;
+
+		setCookie(event, 'refresh_token', data.refresh, {
+			httpOnly: true,
+			sameSite: 'lax',
+			path: '/',
+			maxAge: 60 * 60 * 24 * 30
+		});
+
+		return { access: data.access };
 	} catch (error) {
 		console.error(error instanceof Error ? error.message : error);
 		throw createError({ statusCode: 401, message: 'Invalid credentials' });
