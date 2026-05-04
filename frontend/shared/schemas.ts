@@ -47,3 +47,13 @@ export const userEditSchema = z.object({
 });
 
 export type UserEditSchema = z.infer<typeof userEditSchema>;
+
+export const userSettingsPatchSchema = z
+	.object({
+		cookie_consent: z.boolean().optional()
+	})
+	.refine((value) => value.cookie_consent !== undefined, {
+		message: 'At least one setting must be provided.'
+	});
+
+export type UserSettingsPatchSchema = z.infer<typeof userSettingsPatchSchema>;

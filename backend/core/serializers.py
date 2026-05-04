@@ -2,10 +2,13 @@ from django.contrib.auth.models import Group, User
 from django.db.models import Count
 from rest_framework import serializers
 from rest_framework_simplejwt.exceptions import InvalidToken
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
+from rest_framework_simplejwt.serializers import (
+    TokenObtainPairSerializer,
+    TokenRefreshSerializer,
+)
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Course, Student
+from .models import Course, Student, UserSettings
 
 
 def get_user_role(user):
@@ -50,6 +53,12 @@ class UserPublicSerializer(serializers.ModelSerializer):
 
     def get_role(self, obj):
         return get_user_role(obj)
+
+
+class UserSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserSettings
+        fields = ("cookie_consent",)
 
 
 class UserProfileUpdateSerializer(serializers.ModelSerializer):
@@ -119,6 +128,7 @@ class UserRoleUpdateSerializer(serializers.Serializer):
 
 class UserAdminSerializer(serializers.ModelSerializer):
     """Full user record for superuser management views."""
+
     role = serializers.SerializerMethodField()
 
     class Meta:
@@ -134,6 +144,7 @@ ADMIN_VALID_ROLES = ["viewer", "admin", "superuser"]
 
 class UserAdminUpdateSerializer(serializers.ModelSerializer):
     """Allow superuser to update username and role only."""
+
     role = serializers.ChoiceField(choices=ADMIN_VALID_ROLES)
 
     class Meta:
@@ -143,7 +154,9 @@ class UserAdminUpdateSerializer(serializers.ModelSerializer):
     def validate_username(self, value):
         user = self.instance
         if User.objects.filter(username=value).exclude(pk=user.pk).exists():
-            raise serializers.ValidationError("A user with this username already exists.")
+            raise serializers.ValidationError(
+                "A user with this username already exists."
+            )
         return value
 
     def update(self, instance, validated_data):
