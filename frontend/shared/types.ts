@@ -51,5 +51,9 @@ export type AppUser = {
 	date_joined: string;
 };
 
+export type AppUserSettings = {
+	cookie_consent: boolean | null;
+};
+
 export const userRoleOptions = ['viewer', 'admin', 'superuser'] as const;
 export type UserRole = (typeof userRoleOptions)[number];

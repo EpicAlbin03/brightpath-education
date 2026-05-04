@@ -1,20 +1,19 @@
 <script setup lang="ts">
 import PageTitle from '~/components/PageTitle.vue';
 import { Field, FieldContent, FieldDescription, FieldLabel } from '@/components/ui/field';
-import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useCookieConsent } from '~/composables/useCookieConsent';
+import { useUserSettings } from '~/composables/useUserSettings';
 
 useSeoMeta({
 	title: 'Settings | BrightPath Education',
 	description: 'Manage BrightPath Education account preferences and application settings.'
 });
 
-const { cookieConsent, setCookieConsent } = useCookieConsent();
+const { cookieConsent, setCookieConsent, loading } = useUserSettings();
 
-function handleCookieConsentChange(value: boolean | 'indeterminate') {
-	setCookieConsent(value === true);
+async function handleCookieConsentChange(value: boolean | 'indeterminate') {
+	await setCookieConsent(value === true);
 }
 </script>
 
@@ -42,8 +41,7 @@ function handleCookieConsentChange(value: boolean | 'indeterminate') {
 						<FieldContent>
 							<FieldLabel for="cookie-consent"> Cookie consent </FieldLabel>
 							<FieldDescription class="max-w-md">
-								Agree to our use of cookies. Agree to our use of cookies. Agree to our use of
-								cookies.
+								Manage the cookie preference stored for your account.
 							</FieldDescription>
 						</FieldContent>
 						<Switch
@@ -51,6 +49,7 @@ function handleCookieConsentChange(value: boolean | 'indeterminate') {
 							:model-value="cookieConsent === true"
 							aria-label="Enable cookie consent"
 							class="mt-1"
+							:disabled="loading"
 							@update:model-value="handleCookieConsentChange"
 						/>
 					</Field>
