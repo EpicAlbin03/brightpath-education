@@ -23,7 +23,9 @@ export default defineNuxtConfig({
 				'@vee-validate/zod',
 				'vee-validate',
 				'zod',
-				'@tanstack/vue-table'
+				'@tanstack/vue-table',
+				'@internationalized/date',
+				'reka-ui/date'
 			]
 		},
 		plugins: [tailwindcss()]
