@@ -1,0 +1,17 @@
+version: 1
+applications:
+  - frontend:
+      phases:
+        build:
+          commands:
+            - cd frontend
+            - npm install
+            - npm run build
+      artifacts:
+        baseDirectory: frontend/.output
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - frontend/node_modules/**/*
+    appRoot: frontend
