@@ -293,7 +293,7 @@ const columns: ColumnDef<Student>[] = [
 					onView: () => router.push(`/students/${row.original.id}`),
 					onEdit: () => router.push(`/students/${row.original.id}/edit`),
 					onDelete: async () => {
-						await $fetch(`/api/students/${row.original.id}/delete`, {
+						await $fetch(`/api/students/${row.original.id}`, {
 							method: 'DELETE'
 						});
 
