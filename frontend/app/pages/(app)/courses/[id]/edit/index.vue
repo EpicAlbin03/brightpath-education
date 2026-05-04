@@ -1,9 +1,10 @@
 <script setup lang="ts">
-definePageMeta({ middleware: 'admin' });
 import { LoaderCircle } from 'lucide-vue-next';
 import EditCourseForm from '~/components/EditCourseForm.vue';
 import PageTitle from '~/components/PageTitle.vue';
 import type { CourseIncludeStudents, Student } from '~~/shared/types';
+
+definePageMeta({ middleware: 'admin' });
 
 const route = useRoute();
 
