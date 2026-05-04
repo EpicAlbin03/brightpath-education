@@ -17,15 +17,7 @@ type BackendCourse = {
   description: string
 }
 
-function getAuthHeaders() {
-  if (!import.meta.client) return undefined
-  const accessToken = localStorage.getItem('access_token')
-  if (!accessToken) return undefined
-  return { Authorization: `Bearer ${accessToken}` }
-}
-
 export function useCourses() {
-  const config = useRuntimeConfig()
   const courses = useState<Course[]>('courses:list', () => [])
   const loading = useState<boolean>('courses:loading', () => false)
   const error = useState<string | null>('courses:error', () => null)
@@ -34,9 +26,7 @@ export function useCourses() {
     loading.value = true
     error.value = null
     try {
-      const response = await $fetch<BackendCourse[]>(`${config.public.apiBase}/courses/`, {
-        headers: getAuthHeaders()
-      })
+      const response = await $fetch<BackendCourse[]>(`/api/courses/`)
       courses.value = response.map((c) => ({ id: c.id, name: c.name, code: c.code, description: c.description }))
       return courses.value
     } catch (err) {
@@ -51,9 +41,7 @@ export function useCourses() {
     loading.value = true
     error.value = null
     try {
-      const c = await $fetch<BackendCourse>(`${config.public.apiBase}/courses/${id}/`, {
-        headers: getAuthHeaders()
-      })
+      const c = await $fetch<BackendCourse>(`/api/courses/${id}`)
       return { id: c.id, name: c.name, code: c.code, description: c.description }
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to fetch course.'
@@ -67,10 +55,9 @@ export function useCourses() {
     loading.value = true
     error.value = null
     try {
-      const c = await $fetch<BackendCourse>(`${config.public.apiBase}/courses/`, {
+      const c = await $fetch<BackendCourse>(`/api/courses/`, {
         method: 'POST',
-        body: payload,
-        headers: getAuthHeaders()
+        body: payload
       })
       const created = { id: c.id, name: c.name, code: c.code, description: c.description }
       courses.value = [created, ...courses.value]
@@ -87,10 +74,9 @@ export function useCourses() {
     loading.value = true
     error.value = null
     try {
-      const c = await $fetch<BackendCourse>(`${config.public.apiBase}/courses/${id}/`, {
+      const c = await $fetch<BackendCourse>(`/api/courses/${id}`, {
         method: 'PUT',
-        body: payload,
-        headers: getAuthHeaders()
+        body: payload
       })
       const updated = { id: c.id, name: c.name, code: c.code, description: c.description }
       courses.value = courses.value.map((x) => (x.id === id ? updated : x))
@@ -107,9 +93,8 @@ export function useCourses() {
     loading.value = true
     error.value = null
     try {
-      await $fetch(`${config.public.apiBase}/courses/${id}/`, {
-        method: 'DELETE',
-        headers: getAuthHeaders()
+      await $fetch(`/api/courses/${id}`, {
+        method: 'DELETE'
       })
       courses.value = courses.value.filter((c) => c.id !== id)
     } catch (err) {

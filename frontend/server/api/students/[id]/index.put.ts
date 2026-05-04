@@ -1,12 +1,12 @@
-import { Course } from '~~/shared/types';
+import { Student } from '~~/shared/types';
 import { getToken, validateIdParams, requireAdminOrSuperuser } from '../../utils';
-import { courseFormSchema } from '~~/shared/schemas';
+import { studentFormSchema } from '~~/shared/schemas';
 
 export default defineEventHandler(async (event) => {
 	await requireAdminOrSuperuser(event);
 	const id = await validateIdParams(event);
 
-	const formData = await readValidatedBody(event, courseFormSchema.safeParse);
+	const formData = await readValidatedBody(event, studentFormSchema.safeParse);
 	if (!formData.success) {
 		throw createError({ statusCode: 422, message: 'Invalid form data' });
 	}
@@ -15,8 +15,9 @@ export default defineEventHandler(async (event) => {
 	const token = getToken(event);
 
 	try {
-		const student = await $fetch<Course>(`${config.public.apiBase}/students/${id}/`, {
+		const student = await $fetch<Student>(`${config.public.apiBase}/students/${id}/`, {
 			method: 'PUT',
+			body: formData.data,
 			headers: {
 				Authorization: `Bearer ${token}`,
 				Accept: 'application/json'
