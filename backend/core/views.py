@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Course, Student
+from .models import Course, Student, UserSettings
 from .serializers import (
     CourseSerializer,
     StudentSerializer,
@@ -20,6 +20,7 @@ from .serializers import (
     UserPublicSerializer,
     UserRegisterSerializer,
     UserRoleUpdateSerializer,
+    UserSettingsSerializer,
 )
 
 
@@ -46,6 +47,7 @@ class GoogleLoginView(APIView):
     Verifies it server-side, then finds or creates the user and returns JWT tokens.
     New users are automatically assigned the viewer role.
     """
+
     permission_classes = []
 
     def post(self, request):
@@ -83,9 +85,7 @@ class GoogleLoginView(APIView):
         try:
             user = User.objects.get(email__iexact=email)
         except User.DoesNotExist:
-            username = _generate_username(
-                payload.get("name", email.split("@")[0])
-            )
+            username = _generate_username(payload.get("name", email.split("@")[0]))
             user = User(
                 username=username,
                 email=email,
@@ -104,15 +104,18 @@ class GoogleLoginView(APIView):
             )
 
         refresh = RefreshToken.for_user(user)
-        return Response({
-            "access": str(refresh.access_token),
-            "refresh": str(refresh),
-            "user": UserPublicSerializer(user).data,
-        })
+        return Response(
+            {
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                "user": UserPublicSerializer(user).data,
+            }
+        )
 
 
 class RegisterView(APIView):
     """Public endpoint — register a new user as viewer."""
+
     permission_classes = []
 
     def post(self, request):
@@ -124,6 +127,7 @@ class RegisterView(APIView):
 
 class MeView(APIView):
     """Get or update the authenticated user's own profile."""
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -138,19 +142,45 @@ class MeView(APIView):
         return Response(UserPublicSerializer(user).data)
 
 
+class MeSettingsView(APIView):
+    """Get or update the authenticated user's application settings."""
+
+    permission_classes = [IsAuthenticated]
+
+    def _get_settings(self, user):
+        settings_obj, _ = UserSettings.objects.get_or_create(user=user)
+        return settings_obj
+
+    def get(self, request):
+        settings_obj = self._get_settings(request.user)
+        return Response(UserSettingsSerializer(settings_obj).data)
+
+    def patch(self, request):
+        settings_obj = self._get_settings(request.user)
+        serializer = UserSettingsSerializer(
+            settings_obj, data=request.data, partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        settings_obj = serializer.save()
+        return Response(UserSettingsSerializer(settings_obj).data)
+
+
 class UserRoleUpdateView(APIView):
     """
     PATCH /api/users/{pk}/role/
     Superuser-only: change a user's role to viewer or admin.
     Assigning admin also sets is_staff=True on the target user.
     """
+
     permission_classes = [IsSuperUser]
 
     def patch(self, request, pk):
         try:
             target_user = User.objects.get(pk=pk)
         except User.DoesNotExist:
-            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND
+            )
 
         if target_user.is_superuser:
             return Response(
@@ -190,6 +220,7 @@ class StudentListView(APIView):
     GET  /api/students/        — all authenticated users
     POST /api/students/        — admin and superuser only
     """
+
     def get_permissions(self):
         if self.request.method == "POST":
             return [IsAuthenticated(), IsAdminOrSuperUser()]
@@ -213,6 +244,7 @@ class StudentDetailView(APIView):
     PATCH  /api/students/{id}/  — admin and superuser only
     DELETE /api/students/{id}/  — admin and superuser only
     """
+
     def get_permissions(self):
         if self.request.method in ("PATCH", "DELETE"):
             return [IsAuthenticated(), IsAdminOrSuperUser()]
@@ -252,6 +284,7 @@ class CourseListView(APIView):
     GET  /api/courses/  — all authenticated users
     POST /api/courses/  — admin and superuser only
     """
+
     def get_permissions(self):
         if self.request.method == "POST":
             return [IsAuthenticated(), IsAdminOrSuperUser()]
@@ -275,6 +308,7 @@ class CourseDetailView(APIView):
     PATCH  /api/courses/{id}/  — admin and superuser only
     DELETE /api/courses/{id}/  — admin and superuser only
     """
+
     def get_permissions(self):
         if self.request.method in ("PATCH", "DELETE"):
             return [IsAuthenticated(), IsAdminOrSuperUser()]
@@ -311,8 +345,10 @@ class CourseDetailView(APIView):
 
 # ──── User Management (superuser only) ────
 
+
 class UserListView(APIView):
     """GET /api/users/ — list all users (superuser only)."""
+
     permission_classes = [IsSuperUser]
 
     def get(self, request):
@@ -322,6 +358,7 @@ class UserListView(APIView):
 
 class UserDetailView(APIView):
     """GET / PATCH / DELETE /api/users/{pk}/ — superuser only."""
+
     permission_classes = [IsSuperUser]
 
     def _get_user(self, pk):
@@ -333,13 +370,17 @@ class UserDetailView(APIView):
     def get(self, request, pk):
         target = self._get_user(pk)
         if not target:
-            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND
+            )
         return Response(UserAdminSerializer(target).data)
 
     def patch(self, request, pk):
         target = self._get_user(pk)
         if not target:
-            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND
+            )
         if target.pk == request.user.pk:
             return Response(
                 {"detail": "You cannot modify your own account here."},
@@ -353,7 +394,9 @@ class UserDetailView(APIView):
     def delete(self, request, pk):
         target = self._get_user(pk)
         if not target:
-            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND
+            )
         if target.pk == request.user.pk:
             return Response(
                 {"detail": "You cannot delete your own account."},
@@ -370,13 +413,16 @@ class UserDetailView(APIView):
 
 class UserDeactivateView(APIView):
     """POST /api/users/{pk}/deactivate/ — superuser only."""
+
     permission_classes = [IsSuperUser]
 
     def post(self, request, pk):
         try:
             target = User.objects.get(pk=pk)
         except User.DoesNotExist:
-            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND
+            )
         if target.pk == request.user.pk:
             return Response(
                 {"detail": "You cannot deactivate your own account."},
@@ -395,15 +441,17 @@ class UserDeactivateView(APIView):
 
 class UserActivateView(APIView):
     """POST /api/users/{pk}/activate/ — superuser only."""
+
     permission_classes = [IsSuperUser]
 
     def post(self, request, pk):
         try:
             target = User.objects.get(pk=pk)
         except User.DoesNotExist:
-            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND
+            )
         target.is_active = True
         target.set_password("newpassword123")
         target.save()
         return Response(UserAdminSerializer(target).data)
-
