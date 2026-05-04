@@ -1,0 +1,34 @@
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyc
+
+# Local environment & secrets
+.env
+.env.*
+!.env.example
+
+# Docker (not needed for EB Python platform)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Dev/build artifacts
+*.zip
+staticfiles/
+.git/
+.gitignore
+.gitattributes
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

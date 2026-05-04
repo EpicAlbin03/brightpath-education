@@ -1,0 +1,1 @@
+build: npm install --omit=dev --ignore-scripts

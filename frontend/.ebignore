@@ -1,0 +1,31 @@
+# Built outputs (rebuilt on EB)
+.nuxt/
+.nitro/
+.cache/
+.data/
+dist/
+
+# Dependencies (reinstalled on EB)
+node_modules/
+
+# Nitro virtual package inside .output - build-time only, not needed at runtime
+# Also contains Linux symlinks that Windows EB CLI cannot zip
+.output/server/node_modules/.nitro/
+
+# Local env & secrets
+.env
+.env.*
+!.env.example
+
+# Dev/editor
+.gitignore
+.gitattributes
+.prettierrc
+eslint.config.mjs
+README.md
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
