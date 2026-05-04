@@ -13,11 +13,11 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import CookieConsent from '~/components/CookieConsent.vue';
-import { useCookieConsent } from '~/composables/useCookieConsent';
+import { useUserSettings } from '~/composables/useUserSettings';
 
 const route = useRoute();
 const sidebarState = useCookie<boolean>('sidebar_state');
-const { shouldShowCookieConsent, acceptCookieConsent, declineCookieConsent } = useCookieConsent();
+const { shouldShowCookieConsent, acceptCookieConsent, declineCookieConsent } = useUserSettings();
 
 const breadcrumbSegments = computed(() => {
 	const pathSegments = route.path.split('/').filter(Boolean);
