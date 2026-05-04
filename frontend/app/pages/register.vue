@@ -5,8 +5,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
-const config = useRuntimeConfig()
-
 const username = ref('')
 const email = ref('')
 const password = ref('')
@@ -18,7 +16,7 @@ async function handleRegister() {
   error.value = ''
   loading.value = true
   try {
-    await $fetch(`${config.public.apiBase}/auth/register/`, {
+    await $fetch('/api/auth/register', {
       method: 'POST',
       body: { username: username.value, email: email.value, password: password.value },
     })

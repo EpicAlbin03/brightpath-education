@@ -58,7 +58,7 @@ export function useAuth() {
     refreshTimer = setTimeout(async () => {
       if (!refreshToken.value) return logout()
       try {
-        const data = await $fetch<{ access: string }>(`${config.public.apiBase}/auth/refresh/`, {
+        const data = await $fetch<{ access: string }>('/api/auth/refresh', {
           method: 'POST',
           body: { refresh: refreshToken.value },
         })
@@ -73,16 +73,14 @@ export function useAuth() {
   async function fetchMe() {
     if (!accessToken.value) return
     try {
-      user.value = await $fetch<AuthUser>(`${config.public.apiBase}/auth/me/`, {
-        headers: { Authorization: `Bearer ${accessToken.value}` },
-      })
+      user.value = await $fetch<AuthUser>('/api/auth/me')
     } catch {
       user.value = null
     }
   }
 
   async function login(email: string, password: string) {
-    const data = await $fetch<{ access: string; refresh: string }>(`${config.public.apiBase}/auth/login/`, {
+    const data = await $fetch<{ access: string; refresh: string }>('/api/auth/login', {
       method: 'POST',
       body: { email, password },
     })
@@ -93,7 +91,7 @@ export function useAuth() {
   }
 
   async function loginWithGoogle(idToken: string) {
-    const data = await $fetch<{ access: string; refresh: string; user: AuthUser }>(`${config.public.apiBase}/auth/google/`, {
+    const data = await $fetch<{ access: string; refresh: string; user: AuthUser }>('/api/auth/google', {
       method: 'POST',
       body: { id_token: idToken },
     })
