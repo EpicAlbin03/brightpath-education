@@ -24,7 +24,7 @@ class StudentListCreateAPIView(generics.ListCreateAPIView):
     # queryset = Student.objects.prefetch_related('courses').all()
     queryset = Student.objects.annotate(course_count=Count("courses"))
     serializer_class = StudentSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
 
 class StudentRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -57,7 +57,7 @@ class StudentCoursesListAPIView(generics.ListAPIView):
     """
 
     serializer_class = CourseSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         student = get_object_or_404(Student, pk=self.kwargs["student_id"])
@@ -112,7 +112,7 @@ class StudentCourseUnenrollAPIView(generics.GenericAPIView):
     Removes the student from a specific course (idempotent - returns 204 even if not enrolled).
     """
 
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def delete(self, request, *args, **kwargs):
         student_id = self.kwargs.get("student_id")
@@ -138,7 +138,7 @@ class CourseListCreateAPIView(generics.ListCreateAPIView):
 
     queryset = Course.objects.annotate(student_count=Count("students"))
     serializer_class = CourseSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
 
 class CourseRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -171,7 +171,7 @@ class CourseStudentsListAPIView(generics.ListAPIView):
     """
 
     serializer_class = StudentSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         course = get_object_or_404(Course, pk=self.kwargs["pk"])
